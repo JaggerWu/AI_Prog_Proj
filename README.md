@@ -85,3 +85,10 @@ To try out the included ruby random walk client (requires a ruby intepreter in y
 * Linux:   ```$ java -Dsun.java2d.opengl=true -jar server.jar -l levels_map\levels/MApacman.lvl -c "ruby client/random_agent.rb 3" -g -p```   
 
 The argument passed to random_agent.rb is the number of agents on the level
+
+## What has changed
+*** Bihang has updated the code and I merged it to the master.What we should pay attention to is that I have renamed `searchclients` to `clients`.Soplease remember that our clients' name is `clients`.Don't forhet this.Besides,remember to renew your master.***
+Maybe you can do renew by using command.   
+```git checkout master  
+git pull
+```
