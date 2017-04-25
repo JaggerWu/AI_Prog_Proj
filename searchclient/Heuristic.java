@@ -16,7 +16,7 @@ public abstract class Heuristic implements Comparator<Node> {
         //if(!n.thisAgent.isClearMode()) {
             return manhattanSubgoalHeuristic(n);
         //} else {
-        //	return clearModeHeuristic(n);
+        //  return clearModeHeuristic(n);
         //}
     }
 
