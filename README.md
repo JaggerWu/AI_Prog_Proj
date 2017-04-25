@@ -29,7 +29,8 @@ You should not have the CLASSPATH environment variable set unless you know what 
 - The `-l` <level path> argument specifies the level to run the client on.
     
 - The `-g [<milliseconds>]` argument enables the server's graphical interface.
-The GUI will execute an action every <milliseconds> (default 150). The minimum value is 30 milliseconds.
+
+***The GUI will execute an action every `<milliseconds>` (default 150). The minimum value is 30 milliseconds.***
     
 - The `-p` argument starts the graphical interface in paused mode. Actions are executed after the GUI is unpaused.
     
@@ -43,7 +44,7 @@ The GUI will execute an action every <milliseconds> (default 150). The minimum v
 * ```$ java -jar server.jar -c <command> -l <level path> <arguments>```
 * ```$ java -jar server.jar -o <file>```
 
-### Important for Unix systems *
+### Important for Unix systems 
 Some Unix systems have been known to have bad performance with the graphical interface because hardware acceleration is disabled by default.   
 
 The `-Dsun.java2d.opengl=true` option enables OpenGL hardware acceleration (see [link](http://docs.oracle.com/javase/8/docs/technotes/guides/2d/flags.html)).   
