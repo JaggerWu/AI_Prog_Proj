@@ -1,0 +1,34 @@
+Good background and related work discussions.
+
+Well-structured report.
+
+Your explanation of the goal prioritisation technique itself is quite clear, but it is not at all clear what properties it has, and why it is defined the way it is. This should have been discussed more thoroughly.
+
+In general, some of your descriptions are a bit too informal, and it would have been nice with a more formal algorithmic description. See examples under "details" below. On the other hand, you could have left out some of the low-level details like your representation of levels and "structuring paths and converting to actions". You should try to stay at a slightly higher abstraction level (further away from implementation details), but then be more precise about the algorithmic design at this abstraction level. E.g. the ideas presented in Section 2.4 should have been presented more precisely/in more detail.
+
+You talk about "costs" (e.g. movement costs) and "penalties", but you never show exactly how and where these enter the formulas.
+
+Section 4 is very good.
+
+Overall, your work is solid and your ideas interesting and original.
+
+
+DETAILS:
+
+When you introduce goal scoring: Explain the intuition behind these numbers. E.g., does low score imply high priority.
+
+Forcing an order: Your method seems to be asymmetric, since previous and next are not handled in the same way. What defines previous and next? From left to right? Arbitrary?
+
+"If two goals end up with the same score, they will either be a part of independently grouped goals, or equally accessible." Can you prove this?
+
+Section 2.2 perhaps become a bit too low-level. For instance the following paragraph is a bit too basic and low-level and could have been omitted: "We define agents and boxes as movable objects. They have a position (a cell), some color, and an identifier that uniquely defines them in the level. Such an object can thus also be moved, which changes the position at which it is for that time step."
+
+"We used the cross product as a heuris- tic to prioritise movement w.r.t. cells and their distance to the goal cell." Please elaborate.
+
+"This heuristic is admissible because the actual Manhattan distance will be longer than the Euclidean dis- tance". Unclear.
+
+"We search for paths in a relaxed domain, where boxes and agents are not considered as blocking objects, but the cells in which they are have a higher movement penalty." Please elaborate.
+
+"Given a goal to achieve we split path finding into two parts; first find a box closest to the goal, second find the clos- est agent to move that box." This could sometimes fail. Please address the weaknesses of this approach.
+
+Ignoring heuristics: A bit unclear.

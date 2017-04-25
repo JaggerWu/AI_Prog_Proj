@@ -1,9 +1,7 @@
 *.class
 ./idea
-*.lvl
 *.jar
 *.rb
-*.txt
 .idea/*
 *.sublime-project
 *.sublime-workspace

@@ -1,0 +1,10 @@
+Notes for project
+
+Couldn't find the code. Just reformated my pc and couldn't find the zip on campusnet :(
+
+We made our solution in python and it worked great for us but you should pick what the group members prefer to use.
+
+DO NOT make your AI using Partial-order planning. He speaks a lot about it in the lectures but it has no use in this case. It is a waste of time and makes everything more complex to program. Make something like the searchclient but more advanced and faster.
+
+We started making an AI with POP but shortly before the deadline we scrapped everything and started the normal way. With little time left, we ended up with a program that could handle multiple AIs in many levels but it could only move 1 agent at a time. As a result, our solution was much faster than everybody else and it gave us a lot of points in the competition (1st in speed for multi agent levels and 2nd overall).
+If you want to win, spend some time to optimize your solution so you get extra points in the time competition. (but still try to solve as many levels as possible)
