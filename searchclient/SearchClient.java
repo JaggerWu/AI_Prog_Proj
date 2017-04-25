@@ -1,27 +1,21 @@
-package searchclient;
+package clients;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Stack;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
-import searchclient.Memory;
-import searchclient.Strategy.*;
-import searchclient.Heuristic.*;
+import clients.Strategy.*;
+import clients.Heuristic.*;
 
 
 public class SearchClient {
-	public Node initialState;
-	//public Agent a;
-	
+	public Node initialState;	
 	public HashMap<Character, String> colorSet = new HashMap<Character, String>();
 	
 	public Stack<PlanType> plans = new Stack<PlanType>();
@@ -45,34 +39,33 @@ public class SearchClient {
             /*************************************************/
             loadMap();
             Node.computeGoalDistance();
-            Node.showDistance();
+            //Node.showDistance();
             findSubgoals();
-            System.err.println("Subgoals:  " + subGoals.size());
             latestActionArray = new Command[currentState.agents.size()];
             agentErrorState = new Boolean[currentState.agents.size()];
             serverMessages.readLine();
             boolean finished = false;
             while(!finished) {
                 for (Agent agent : currentState.agents) {
-                    agent.findNextGoal(currentState, subGoals);
-                    if(!agent.isQuarantined() && !agent.done) {
-                        //System.err.println("Agent " + agent.getLabel() + " finding solution for goal " + agent.getCurrentSubGoal().getId());
+                    agent.tryToFindNextGoal(currentState, subGoals);
+                    if(!agent.isQuarantined() && !agent.isDone) {
+                        System.err.println("Agent " + agent.getLabel() + " finding solution for goal " + agent.getCurrentSubGoal().getId());
                         Node myinitalState = currentState.getCopy();
                         myinitalState.thisAgent = agent;
                         agent.setStrategy(new StrategyBestFirst(new AStar(myinitalState)));
-                        //agent.setStrategy(new StrategyDFS());
+                        //agent.setStrategy(new StrategyBFS());
                         LinkedList<Node> plan = searchTest(agent.getStrategy(), myinitalState);
                         //System.err.println(plan);
                         if(plan != null) {
                             agent.appendSolution(plan);
                         } else {
-                            //System.err.println("Solution could not be found");
+                            System.err.println("Solution could not be found");
                         }
                     }
                 }
                 boolean cont = true;
                 while (cont) {
-                    cont = update();
+                    cont = performActions();
                     boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
                     //currentState.printState();
                     if(!status) {
@@ -126,8 +119,6 @@ public class SearchClient {
             String line = serverMessages.readLine();
             String color;	
             while(line.matches("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$")) {
-		//System.err.println("Error, client does not support colors.");
-		//System.exit(1);
 		line = line.replaceAll( "\\s", "" );
 		color = line.split( ":" )[0];	
 		for ( String id : line.split( ":" )[1].split( "," ) )
@@ -145,18 +136,13 @@ public class SearchClient {
                 max_row++;
             }
             Node.initNodeSize(max_row, max_col);
-           // System.err.println("row: " + max_row + " ----- col :" + max_col);
             int row = 0;
             //boolean agentFound = false;
-            this.initialState = new Node(null);
-		
+            this.initialState = new Node(null);	
             for(int i=0; i<allServerMessages.size(); i++) {
                 for (int col = 0; col < allServerMessages.get(i).length(); col++) {
                     char chr = allServerMessages.get(i).charAt(col);
-
                     if (chr == '+') { // Wall.
-                        //this.initialState.walls[row][col] = true;
-                        //Node.walls.put(new LocationXY(row, col), true);
                         this.initialState.wallMap.put(new LocationXY(row, col), true);
                         this.initialState.wallMapsta.put(new LocationXY(row, col), true);
                     } else if ('0' <= chr && chr <= '9') { // Agent.
@@ -164,21 +150,18 @@ public class SearchClient {
                         this.initialState.agentMap.put(new LocationXY(row,col), new Agent(colorSet.get(chr), new LocationXY(row,col), chr));
                         this.initialState.agentbyID.put(chr, new Agent(colorSet.get(chr), new LocationXY(row,col), chr));
                         this.initialState.agentByCoordinate.put(new LocationXY(row,col), new Agent(colorSet.get(chr), new LocationXY(row,col), chr));
-                        /*******************************************/
                         if(newAgent.getLabel() == '0'){
                             Node.setAgent0(newAgent);
                         }
                         currentState.agents.add(newAgent);
                         agents.add(newAgent);
-                        
-                        /*******************************************/
                     } else if ('A' <= chr && chr <= 'Z') { // Box.
                         Box newBox = new Box(colorSet.get(chr), new LocationXY(row,col), chr);
                 	this.initialState.boxMap.put(new LocationXY(row,col), new Box(colorSet.get(chr), new LocationXY(row,col), chr));
                 	this.initialState.boxMapsta.put(new LocationXY(row,col), new Box(colorSet.get(chr), new LocationXY(row,col), chr));
                 	this.initialState.currentbox = newBox;
                         currentState.addBox(newBox);
-                        currentState.addBox1(newBox);
+                        //currentState.addBox1(newBox);
                     } else if ('a' <= chr && chr <= 'z') { // Goal.
                 	this.initialState.goalMap.put(new LocationXY(col,row), new Goal(colorSet.get(chr), new LocationXY(col,row), chr));
                 	this.initialState.goalMapsta.put(new LocationXY(col,row), new Goal(colorSet.get(chr), new LocationXY(row,col), chr));
@@ -194,13 +177,13 @@ public class SearchClient {
             }
         }
         
-        public boolean update() throws IOException {
+        public boolean performActions() throws IOException {
             //String jointAction = "[";
             String jointAction = "";
             int noActions = 0;
             ArrayList<Agent> actAgent = Agent.sortById(agents);
             for (int i = 0; i < actAgent.size(); i++) {
-                Command action = actAgent.get(i).act();
+                Command action = actAgent.get(i).getNextAction();
                 String actionStr = "";
                 latestActionArray[i] = action;
                 if(action == null){
@@ -242,7 +225,7 @@ public class SearchClient {
         public void findSubgoals(){
             Node.setGoalsPriority();
             subGoals = new PriorityQueue<>(20, subGoalComparator);
-            for (Goal goal : Node.getGoalsByCoordinate().values()){
+            for (Goal goal : Node.getGoalByLocation().values()){
                 subGoals.offer(goal);
             }
         }
@@ -270,25 +253,15 @@ public class SearchClient {
         
         public static LinkedList<Node> searchTest(Strategy strategy, Node initialState) {
         strategy.addToFrontier(initialState);
-        //System.err.println(initialState.thisAgent.getLocation());
         while (true) {
-            //if (strategy.timeSpent() > 300) {
-            //	return null;
-            //}
             if (strategy.frontierIsEmpty()) {
-                //System.err.println("Agent " + initialState.thisAgent.getLabel() + " says: Frontier is empty");
+                System.err.println("Agent " + initialState.thisAgent.getLabel() + " says: Frontier is empty");
                 return null;
             }
-
             Node leafNode = strategy.getAndRemoveLeaf();
-            // uncomment below for more debugging:
-            //System.err.println("Chosen: " + (leafNode.action != null ? leafNode.action.toActionString() : ""));
-            //leafNode.printState();
-
             if ( leafNode.isGoalState() ) {
                 return leafNode.extractPlan();
             }
-
             strategy.addToExplored(leafNode);
             for (Node n : leafNode.getExpandedNodes()) {
                 if ( !strategy.isExplored(n) && !strategy.inFrontier(n) ) {
@@ -544,14 +517,10 @@ public class SearchClient {
     
 
 	public static void main(String[] args) throws Exception {
-            //BufferedReader serverMessages = new BufferedReader(new InputStreamReader(System.in));
-            // Use stderr to print to console
             System.err.println("SearchClient initializing. I am sending this using the error output stream.");
-            // Read level and create the initial state of the problem
-            //SearchClient client = new SearchClient();
-            
-            Node.computeGoalDistance();
-            Node.showDistance();
+            // Read level and create the initial state of the problem           
+            //Node.computeGoalDistance();
+            //Node.showDistance();
             
             try {
                 SearchClient client = new SearchClient();
@@ -560,65 +529,5 @@ public class SearchClient {
                 System.err.println(e.getMessage());
             // Got nowhere to write to probably
             }
-           // findSubgoals();
-		
-            //System.exit(1);
-		
-       /* Strategy strategy;
-        if (args.length > 0) {
-            switch (args[0].toLowerCase()) {
-                case "-bfs":
-                    strategy = new StrategyBFS();
-                    break;
-                case "-dfs":
-                    strategy = new StrategyDFS();
-                    break;
-                case "-astar":
-                    strategy = new StrategyBestFirst(new AStar(client.initialState));
-                    break;
-                case "-wastar":
-                    // You're welcome to test WA* out with different values, but for the report you must at least indicate benchmarks for W = 5.
-                    strategy = new StrategyBestFirst(new WeightedAStar(client.initialState, 3));
-                    break;
-                case "-greedy":
-                    strategy = new StrategyBestFirst(new Greedy(client.initialState));
-                    break;
-                default:
-                    strategy = new StrategyBFS();
-                    System.err.println("Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.");
-            }
-        } else {
-            strategy = new StrategyBFS();
-            System.err.println("Defaulting to BFS search. Use arguments -bfs, -dfs, -astar, -wastar, or -greedy to set the search strategy.");
-        }
-
-		LinkedList<Node> solution;
-		try {
-			solution = client.Search(strategy);
-		} catch (OutOfMemoryError ex) {
-			System.err.println("Maximum memory usage exceeded.");
-			solution = null;
-		}
-
-		if (solution == null) {
-			System.err.println(strategy.searchStatus());
-			System.err.println("Unable to solve level.");
-			System.exit(0);
-		} else {
-			System.err.println("\nSummary for " + strategy.toString());
-			System.err.println("Found solution of length " + solution.size());
-			System.err.println(strategy.searchStatus());
-
-			for (Node n : solution) {
-				String act = n.action.toString();
-				System.out.println(act);
-				String response = serverMessages.readLine();
-				if (response.contains("false")) {
-					System.err.format("Server responsed with %s to the inapplicable action: %s\n", response, act);
-					System.err.format("%s was attempted in \n%s\n", act, n.toString());
-					break;
-				}
-			}
-		}*/
 	}
 }

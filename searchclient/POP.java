@@ -1,6 +1,6 @@
-package searchclient;
+package clients;
 
-import searchclient.Command.Type;
+import clients.Command.Type;
 
 
 
