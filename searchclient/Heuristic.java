@@ -6,6 +6,7 @@ import java.util.HashMap;
 public abstract class Heuristic implements Comparator<Node> {
     
     public Node initialState;
+
     public Heuristic(Node initialState) {
         // Here's a chance to pre-process the static parts of the level.
         this.initialState = initialState;
@@ -42,7 +43,6 @@ public abstract class Heuristic implements Comparator<Node> {
             }
             Command com = n.action;
             if(targetBox != null){
-                //calculate heuristic. There is extra weight in moving the box closer to its goal.
                 HeuristicDistance = Math.abs(n.thisAgent.getLocation().getRow() - targetBox.getLocation().getRow()) +
                             Math.abs(n.thisAgent.getLocation().getCol() - targetBox.getLocation().getCol()) + boxDistance;
                 if(com != null && !(com.actionType == Command.Type.Move)){
@@ -58,7 +58,6 @@ public abstract class Heuristic implements Comparator<Node> {
                         }
                     }
                 }
-
             } else {
                 if(!n.isGoalState()) {
                     System.err.println("Error calculating heuristics: No free box to solve current main sub-goal");
