@@ -1,4 +1,4 @@
-package searchclient;
+package clients;
 /**
  * Created by ilma on 26/03/2017.
  */
@@ -37,10 +37,10 @@ public class Goal {
     }
     
     public Goal(String tcolor, LocationXY loc, char letter) {
-		this.id = letter;
-		this.color = tcolor;
-		this.location = loc;
-	}
+        this.id = letter;
+        this.color = tcolor;
+        this.location = loc;
+    }
 
     public char getId() {
         return id;
@@ -73,21 +73,19 @@ public class Goal {
         //isBeingPrioritized = false;
     }
 
-	public boolean isEvaluated() {
-		return evaluated;
-	}
+    public boolean isEvaluated() {
+        return evaluated;
+    }
 
-	public void setEvaluated(boolean evaluated) {
-		this.evaluated = evaluated;
-	}
+    public void setEvaluated(boolean evaluated) {
+        this.evaluated = evaluated;
+    }
 	
-	public static boolean isGoal(LocationXY loc, Node n){
-		//boolean is = false;
-		for(Goal g : n.goalMap.values()){
-			if(loc.theSamePlace(g.getLocation()))return true;
-		}
-		return false;
-	}
-    
-
+    public static boolean isGoal(LocationXY loc, Node n){
+        //boolean is = false;
+        for(Goal g : n.goalMap.values()){
+            if(loc.theSamePlace(g.getLocation()))return true;
+        }
+        return false;
+    }
 }

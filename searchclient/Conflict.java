@@ -1,4 +1,4 @@
-package searchclient;
+package clients;
 
 import java.util.ArrayList;
 

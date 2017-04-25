@@ -1,4 +1,4 @@
-package searchclient;
+package clients;
 
 /**
  * Created by ilma on 26/03/2017.
@@ -8,19 +8,19 @@ public class Box {
     private String color;
     private LocationXY location;
     /************************************************/
-    private boolean inFinalPosition = false;
+    private boolean isInFinalPosition = false;
     /************************************************/
-    public Box(char letter, String color, LocationXY location) {
-        this.id = letter;
+    public Box(char id, String color, LocationXY location) {
+        this.id = id;
         this.color = color;
         this.location = location;
     }
     /*************************/
-    public Box(char letter, String color, LocationXY coordinate, boolean inFinalPosition) {
-        this.id = letter;
+    public Box(char id, String color, LocationXY location, boolean isInFinalPosition) {
+        this.id = id;
         this.color = color;
-        this.location = coordinate;
-        this.inFinalPosition = inFinalPosition;
+        this.location = location;
+        this.isInFinalPosition = isInFinalPosition;
     }
     /******************************/
     
@@ -40,12 +40,12 @@ public class Box {
     }
 
     public Box(String tcol, LocationXY loc, char letter) {
-		this.id = letter;
-		this.location = loc;
-		this.color = tcol;
-	}
+        this.id = letter;
+        this.location = loc;
+        this.color = tcol;
+    }
 
-	public char getId() {
+    public char getId() {
         return id;
     }
 
@@ -68,13 +68,14 @@ public class Box {
     public void setLocation(LocationXY location) {
         this.location = location;
     }
-    /***************************************************/
-    public boolean isInFinalPosition() {
-        return inFinalPosition;
+    /**
+     * @return *************************************************/
+    public boolean isBoxInFinalPosition() {
+        return isInFinalPosition;
     }
     
-    public void setInFinalPosition(boolean inFinalPosition) {
-        this.inFinalPosition = inFinalPosition;
+    public void setInFinalPosition(boolean isInFinalPosition) {
+        this.isInFinalPosition = isInFinalPosition;
     }
     /*****************************************************/
 

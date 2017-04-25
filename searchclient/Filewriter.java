@@ -1,4 +1,4 @@
-package searchclient;
+package clients;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
@@ -9,15 +9,15 @@ public class Filewriter {
 	
 	  public static void printtotxt(){
 		 try{
-			 File file = new File("plan.txt");//
-		        if (!file.exists()) {//  
+			 File file = new File("plan.txt");// ָ��Ҫд����ļ�  
+		        if (!file.exists()) {// ����ļ��������򴴽�  
 		            file.createNewFile();  
 		        }  
-		        // 
+		        // ��ȡ���ļ��Ļ��������  
 		        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));  
-		        //  
+		        // д����Ϣ  
 		        bufferedWriter.write(tar);  
-		        //bufferedWriter.newLine();// 
+		        //bufferedWriter.newLine();// ��ʾ���� 
 		        bufferedWriter.close();
 		    }catch(Exception e){
 		    	System.out.println(e);
