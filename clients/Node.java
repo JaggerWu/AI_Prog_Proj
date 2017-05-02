@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import clients.Command.Dir;
 import clients.Command.Type;
 import java.util.List;
 import java.util.Objects;
@@ -556,7 +557,7 @@ public class Node {
                         int newBoxRow = newAgentRow + Command.dirToRowChange(command.dir2);
                         int newBoxCol = newAgentCol + Command.dirToColChange(command.dir2);
                         // .. and that new cell of box is free
-                        if (cellIsFree(newBoxRow, newBoxCol)) {
+                        if (cellIsFree(newBoxRow, newBoxCol) && this.boxMapByLocation.get(new LocationXY(newAgentRow, newAgentCol)).getColor().equals(thisAgent.getColor())) {
                             Node n = this.ChildNode();
                             n.action = command;
                             n.thisAgent.getLocation().setRow(newAgentRow);
@@ -579,7 +580,7 @@ public class Node {
                         int boxRow = this.thisAgent.getLocation().getRow() + Command.dirToRowChange(command.dir2);
                         int boxCol = this.thisAgent.getLocation().getCol() + Command.dirToColChange(command.dir2);
                         // .. and there's a box in "dir2" of the agent
-                        if (boxAt(boxRow, boxCol)) {
+                        if (boxAt(boxRow, boxCol)  && this.boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor().equals(thisAgent.getColor())) {
                             Node n = this.ChildNode();
                             n.action = command;
                             // TODO: eventually refactor with clone()
@@ -609,8 +610,10 @@ public class Node {
  * @param commands*      
  * @param serverOutput*      
  * @param client*      
- * @return **********************************************/      
+ * @return **********************************************/     
+    
     public boolean changeState(Command[] commands, String[] serverOutput, SearchClient client){
+        System.err.println("changing");
         for(int i = 0; i < commands.length; i++){
             Agent activeAgent = this.getAgentById(Integer.toString(i).charAt(0));
             if(commands[i] != null && !serverOutput[i].equals("false")) {
@@ -621,12 +624,19 @@ public class Node {
                     case Pull:
                         int boxRow = activeAgent.getLocation().getRow() + Command.dirToRowChange(commands[i].dir2);
                         int boxCol = activeAgent.getLocation().getCol() + Command.dirToColChange(commands[i].dir2);
+                        System.err.println("Agent: " + activeAgent.getColor());
+                        System.err.println("Box: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor());
+                        System.err.println("Equal: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor().equals(activeAgent.getColor()));
                         if (boxAt(boxRow, boxCol) && boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor() == null || boxAt(boxRow, boxCol) && boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor().equals(activeAgent.getColor())) {
+                            System.err.println("Agent: " + activeAgent.getColor());
+                            System.err.println("Box: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor());
+                            System.err.println("Equal: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor().equals(activeAgent.getColor()));
                             Box pullBox = this.boxMapByLocation.get(new LocationXY(boxRow, boxCol));
                             Box pullBoxNew = new Box(pullBox.getId(), pullBox.getColor(), activeAgent.getLocation());
                             boxMapByLocation.remove(pullBox.getLocation());
 
                             if(activeAgent.getCurrentSubGoal() != null && activeAgent.getCurrentSubGoal().getLocation().equals(pullBoxNew.getLocation()) && !activeAgent.isClearMode()) {
+                               
                                 pullBoxNew.setInFinalPosition(true);
                                 System.err.println("Set in final position");
                             }
@@ -720,17 +730,18 @@ public class Node {
         }
         System.err.print(builder.toString());
     }
+   
     
     public ArrayList<LocationXY> commandToLocations(LocationXY startPos, Command command){
         ArrayList<LocationXY> retArr = new ArrayList<>();
         LocationXY newAgentPos = new LocationXY(startPos.getRow() + Command.dirToRowChange(command.dir1), startPos.getCol() + Command.dirToColChange(command.dir1));
         retArr.add(newAgentPos);
         if(command.actionType == Type.Push){
-                LocationXY newBoxPos = new LocationXY(newAgentPos.getRow() + Command.dirToRowChange(command.dir2), newAgentPos.getCol() + Command.dirToColChange(command.dir2));
-                retArr.add(newBoxPos);
+            LocationXY newBoxPos = new LocationXY(newAgentPos.getRow() + Command.dirToRowChange(command.dir2), newAgentPos.getCol() + Command.dirToColChange(command.dir2));
+            retArr.add(newBoxPos);
         } else if(command.actionType == Type.Pull){
-                LocationXY newBoxPos = new LocationXY(startPos.getRow() + Command.dirToRowChange(command.dir2), startPos.getCol() + Command.dirToColChange(command.dir2));
-                retArr.add(newBoxPos);
+            LocationXY newBoxPos = new LocationXY(startPos.getRow() + Command.dirToRowChange(command.dir2), startPos.getCol() + Command.dirToColChange(command.dir2));
+            retArr.add(newBoxPos);
         }
         return retArr;
     }

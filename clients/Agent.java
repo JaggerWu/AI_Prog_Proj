@@ -217,6 +217,8 @@ public class Agent {
                 for(LocationXY cord : clearCoordinates){
                     Box box = currentState.getBoxByLocation().get(cord);
                     if(agent.getLocation().equals(cord) || (box != null && box.getColor() != null && box.getColor().equals(agent.getColor()) && !box.getColor().equals(color))){
+                        //System.err.println("box: " + box.getId());
+                        System.err.println("agent :" + agent.getLabel());
                         agentClearCords.add(cord);
                     }
                 }
@@ -235,10 +237,11 @@ public class Agent {
         clearCords = coordinates;
         Node myCurrentState = currentState.getCopy();
         myCurrentState.thisAgent = this;
-        this.setStrategy(new StrategyBestFirst(new AStar(myCurrentState)));//new StrategyBestFirst(new AStar(myinitalState))
+        this.setStrategy(new StrategyBestFirst(new AStar(myCurrentState)));
         LinkedList<Node> plan = SearchClient.search(this.getStrategy(), myCurrentState);
         if(plan != null) {
             this.appendSolution(plan);
+            
         } else {
             System.err.println("Solution could not be found");
         }

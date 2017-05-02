@@ -16,6 +16,7 @@ public abstract class Heuristic implements Comparator<Node> {
             return manhattanSubgoalHeuristic(n);
         } else {
             return clearModeHeuristic(n);
+            //return manhattanSubgoalHeuristic(n);
         }
     }
 
@@ -53,23 +54,23 @@ public abstract class Heuristic implements Comparator<Node> {
                         HeuristicDistance += 15;//30
                         Box otherBox = n.getBoxByLocation().get(new LocationXY(boxRow, boxCol));
                         if(otherBox != null && otherBox.isBoxInFinalPosition()){
-                            HeuristicDistance += 150;//1000
+                            HeuristicDistance += 200;//1000
                         }
                     }
                 }
                 // if the thisAgent next movement conflict with an anther agent then the Heuristic will be worsen.
                 for(Agent a : n.agents){
                     if(a.getLabel() != n.thisAgent.getLabel() && a.getLocation().equals(n.thisAgent.getLocation())){
-                        HeuristicDistance += 200;//200
+                        HeuristicDistance += 100;//200
                     }
                 }
                 // if the thisAgent next movement conflict with a box then the Heuristic will be worsen.
                 // if the box is in final position then  the Heuristic will become even worsen.
                 Box possibleBox = n.getBoxByLocation().get(n.thisAgent.getLocation());
                 if(possibleBox != null){
-                    HeuristicDistance += 20;//200
+                    HeuristicDistance += 100;//200
                     if(possibleBox.isBoxInFinalPosition()){
-                        HeuristicDistance += 150;//2000
+                        HeuristicDistance += 200;//2000
                     }
                 }
             } else {
