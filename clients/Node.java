@@ -720,6 +720,20 @@ public class Node {
         }
         System.err.print(builder.toString());
     }
+    
+    public ArrayList<LocationXY> commandToLocations(LocationXY startPos, Command command){
+        ArrayList<LocationXY> retArr = new ArrayList<>();
+        LocationXY newAgentPos = new LocationXY(startPos.getRow() + Command.dirToRowChange(command.dir1), startPos.getCol() + Command.dirToColChange(command.dir1));
+        retArr.add(newAgentPos);
+        if(command.actionType == Type.Push){
+                LocationXY newBoxPos = new LocationXY(newAgentPos.getRow() + Command.dirToRowChange(command.dir2), newAgentPos.getCol() + Command.dirToColChange(command.dir2));
+                retArr.add(newBoxPos);
+        } else if(command.actionType == Type.Pull){
+                LocationXY newBoxPos = new LocationXY(startPos.getRow() + Command.dirToRowChange(command.dir2), startPos.getCol() + Command.dirToColChange(command.dir2));
+                retArr.add(newBoxPos);
+        }
+        return retArr;
+    }
     /*****************************************************/
 
     public ArrayList<Node> getExpandedNodesAcrosser() {

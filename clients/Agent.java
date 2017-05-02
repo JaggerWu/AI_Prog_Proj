@@ -1,5 +1,7 @@
 package clients;
 
+import clients.Heuristic.AStar;
+import clients.Strategy.StrategyBestFirst;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
@@ -19,6 +21,7 @@ public class Agent {
     private LinkedList<Node> solution = new LinkedList<Node>();
     private Strategy strategy;
     private Node latestAction = null;
+    private Agent quarantinedBy;
 
     public Agent(){
         this.location = new LocationXY();
@@ -173,6 +176,76 @@ public class Agent {
         } else {
             return null;
         }
+    }
+    
+    public void setQuarantined(boolean quarantined) {
+        this.quarantined = quarantined;
+    }
+    
+    public Agent getQuarantinedBy() {
+        return quarantinedBy;
+    }
+
+    public void setQuarantinedBy(Agent quarantinedBy) {
+        this.quarantinedBy = quarantinedBy;
+    }
+    
+    public void requestClear(Node currentState){
+        ArrayList<LocationXY> clearCoordinates = new ArrayList<>();
+        LocationXY pos = location;
+        Command cmd;
+        ArrayList<LocationXY> cmdEffectsCoordinates;
+        System.err.println(pos);
+        if(latestAction != null) {
+            cmd = latestAction.action;
+            cmdEffectsCoordinates = currentState.commandToLocations(pos, cmd);
+            pos = new LocationXY(cmdEffectsCoordinates.get(0).getRow(), cmdEffectsCoordinates.get(0).getCol());
+            clearCoordinates.addAll(cmdEffectsCoordinates);
+            //System.err.println(cmd.toString());
+        }
+        cmd = getNextAction();
+        while(cmd != null){
+            //System.err.println(cmd.toString());
+            cmdEffectsCoordinates = currentState.commandToLocations(pos, cmd);
+            pos = new LocationXY(cmdEffectsCoordinates.get(0).getRow(), cmdEffectsCoordinates.get(0).getCol());
+            clearCoordinates.addAll(cmdEffectsCoordinates);
+            cmd = getNextAction();
+        }
+        for(Agent agent : currentState.agents){
+            if(agent.getLabel() != label){
+                ArrayList<LocationXY> agentClearCords = new ArrayList<>();
+                for(LocationXY cord : clearCoordinates){
+                    Box box = currentState.getBoxByLocation().get(cord);
+                    if(agent.getLocation().equals(cord) || (box != null && box.getColor() != null && box.getColor().equals(agent.getColor()) && !box.getColor().equals(color))){
+                        agentClearCords.add(cord);
+                    }
+                }
+                agent.clearCells(agentClearCords, currentState, this);
+            }
+        }
+    }
+    
+    public void clearCells(ArrayList<LocationXY> coordinates, Node currentState, Agent sender){
+        System.err.println("Agent number " + label + " attempting to clear");
+        for(LocationXY cord : coordinates){
+            System.err.println(cord.toString());
+        }
+        clearMode = true;
+        solution.clear();
+        clearCords = coordinates;
+        Node myCurrentState = currentState.getCopy();
+        myCurrentState.thisAgent = this;
+        this.setStrategy(new StrategyBestFirst(new AStar(myCurrentState)));//new StrategyBestFirst(new AStar(myinitalState))
+        LinkedList<Node> plan = SearchClient.search(this.getStrategy(), myCurrentState);
+        if(plan != null) {
+            this.appendSolution(plan);
+        } else {
+            System.err.println("Solution could not be found");
+        }
+        clearMode = false;
+        clearCords.clear();
+        quarantined = true;
+        quarantinedBy = sender;
     }
 
     @Override

@@ -35,8 +35,6 @@ public class SearchClient {
 	public int max_col;
 	PriorityQueue<Goal> goalqueue;
 	public SearchClient() throws Exception {
-            
-            /*************************************************/
             loadMap();
             Node.computeGoalDistance();
             //Node.showDistance();
@@ -54,7 +52,7 @@ public class SearchClient {
                         myinitalState.thisAgent = agent;
                         agent.setStrategy(new StrategyBestFirst(new AStar(myinitalState)));
                         //agent.setStrategy(new StrategyBFS());
-                        LinkedList<Node> plan = searchTest(agent.getStrategy(), myinitalState);
+                        LinkedList<Node> plan = search(agent.getStrategy(), myinitalState);
                         //System.err.println(plan);
                         if(plan != null) {
                             agent.appendSolution(plan);
@@ -73,7 +71,7 @@ public class SearchClient {
                         System.exit(0);
                     }
                 }
-              /*  boolean error = false;
+                boolean error = false;
                 for(int i = 0; i < latestServerOutput.length; i++){
                     if(latestServerOutput[i] != null && latestServerOutput[i].equals("false")){
                         error = true;
@@ -87,21 +85,21 @@ public class SearchClient {
                         agentErrorState[i] = false;
                         System.err.println("Agent number " + currentState.agents.get(i).getLabel() + " is done with no error");
                         for(Agent a : currentState.getAgents()){
-                            if(a.isQuarantined() && a.getQuarantinedBy().getId() == currentState.agents.get(i).getLabel()){
+                            if(a.isQuarantined() && a.getQuarantinedBy().getLabel() == currentState.agents.get(i).getLabel()){
                                 a.setQuarantined(false);
                             }
                         }
                     }
                 }
                 if(error){
-                    while (update()) {
+                    while (performActions()) {
                         boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
                         if(!status) {
                             currentState.printState();
                             System.exit(0);
                         }
                     }
-                }*/
+                }
                 boolean agentsDone = true;
                 for(Agent a : currentState.agents){
                     if(a.getCurrentSubGoal() != null){
@@ -178,8 +176,8 @@ public class SearchClient {
         }
         
         public boolean performActions() throws IOException {
-            //String jointAction = "[";
-            String jointAction = "";
+            String jointAction = "[";
+            //String jointAction = "";
             int noActions = 0;
             ArrayList<Agent> actAgent = Agent.sortById(agents);
             for (int i = 0; i < actAgent.size(); i++) {
@@ -197,7 +195,7 @@ public class SearchClient {
                     jointAction += ",";
                 }
             }
-            //jointAction += "]";
+            jointAction += "]";
             if(noActions == actAgent.size()){
                 return false;
             }
@@ -251,7 +249,7 @@ public class SearchClient {
 	}
 	 */
         
-        public static LinkedList<Node> searchTest(Strategy strategy, Node initialState) {
+        public static LinkedList<Node> search(Strategy strategy, Node initialState) {
         strategy.addToFrontier(initialState);
         while (true) {
             if (strategy.frontierIsEmpty()) {
