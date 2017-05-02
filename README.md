@@ -91,5 +91,7 @@ The argument passed to random_agent.rb is the number of agents on the level
 Maybe you can do renew by using command.   
 ```
 git checkout master   
-git pull
+git pull  
+git checkout [your branch]
+git rebase master
 ```
