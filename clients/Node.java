@@ -557,6 +557,8 @@ public class Node {
                         int newBoxRow = newAgentRow + Command.dirToRowChange(command.dir2);
                         int newBoxCol = newAgentCol + Command.dirToColChange(command.dir2);
                         // .. and that new cell of box is free
+                        //System.err.println(this.boxMapByLocation.get(new LocationXY(newAgentRow, newAgentCol)).getId());
+                        //System.err.println(this.thisAgent.getColor());
                         if (cellIsFree(newBoxRow, newBoxCol) && this.boxMapByLocation.get(new LocationXY(newAgentRow, newAgentCol)).getColor().equals(thisAgent.getColor())) {
                             Node n = this.ChildNode();
                             n.action = command;

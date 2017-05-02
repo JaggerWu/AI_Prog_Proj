@@ -45,32 +45,32 @@ public abstract class Heuristic implements Comparator<Node> {
             if(targetBox != null){
                 //calculate manhattan distance from this agent to targetBox + distance from targetBox to its goal.
                 HeuristicDistance = Math.abs(n.thisAgent.getLocation().getRow() - targetBox.getLocation().getRow()) +
-                            Math.abs(n.thisAgent.getLocation().getCol() - targetBox.getLocation().getCol()) + boxToSubGoalDistance;
+                            Math.abs(n.thisAgent.getLocation().getCol() - targetBox.getLocation().getCol()) + 10*boxToSubGoalDistance;
                 if(comand != null && !(comand.actionType == Command.Type.Move)){
                     //if the agent is moving boxes that is not the target box, the heuristic is worsened.
                     int boxRow = n.thisAgent.getLocation().getRow() + Command.dirToRowChange(comand.dir2);
                     int boxCol = n.thisAgent.getLocation().getCol() + Command.dirToColChange(comand.dir2);
                     if(!(boxRow == targetBox.getLocation().getRow() && boxCol == targetBox.getLocation().getCol() )){
-                        HeuristicDistance += 15;//30
+                        HeuristicDistance += 30;//30
                         Box otherBox = n.getBoxByLocation().get(new LocationXY(boxRow, boxCol));
                         if(otherBox != null && otherBox.isBoxInFinalPosition()){
-                            HeuristicDistance += 200;//1000
+                            HeuristicDistance += 1000;//1000
                         }
                     }
                 }
                 // if the thisAgent next movement conflict with an anther agent then the Heuristic will be worsen.
                 for(Agent a : n.agents){
                     if(a.getLabel() != n.thisAgent.getLabel() && a.getLocation().equals(n.thisAgent.getLocation())){
-                        HeuristicDistance += 100;//200
+                        HeuristicDistance += 200;//200
                     }
                 }
                 // if the thisAgent next movement conflict with a box then the Heuristic will be worsen.
                 // if the box is in final position then  the Heuristic will become even worsen.
                 Box possibleBox = n.getBoxByLocation().get(n.thisAgent.getLocation());
                 if(possibleBox != null){
-                    HeuristicDistance += 100;//200
+                    HeuristicDistance += 200;//200
                     if(possibleBox.isBoxInFinalPosition()){
-                        HeuristicDistance += 200;//2000
+                        HeuristicDistance += 2000;//2000
                     }
                 }
             } else {

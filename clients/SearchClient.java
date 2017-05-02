@@ -116,7 +116,9 @@ public class SearchClient {
             // Read lines specifying colors
             String line = serverMessages.readLine();
             String color;	
+            boolean hascolor = false;
             while(line.matches("^[a-z]+:\\s*[0-9A-Z](\\s*,\\s*[0-9A-Z])*\\s*$")) {
+                hascolor = true;
 		line = line.replaceAll( "\\s", "" );
 		color = line.split( ":" )[0];	
 		for ( String id : line.split( ":" )[1].split( "," ) )
@@ -132,6 +134,7 @@ public class SearchClient {
                 line = serverMessages.readLine();
                 allServerMessages.add(line);
                 max_row++;
+                if(line.length() > max_col)max_col = line.length();
             }
             Node.initNodeSize(max_row, max_col);
             int row = 0;
@@ -139,40 +142,59 @@ public class SearchClient {
             this.initialState = new Node(null);	
             for(int i=0; i<allServerMessages.size(); i++) {
                 for (int col = 0; col < allServerMessages.get(i).length(); col++) {
+              
                     char chr = allServerMessages.get(i).charAt(col);
+                    String tcolor;
                     if (chr == '+') { // Wall.
                         this.initialState.wallMap.put(new LocationXY(row, col), true);
                         this.initialState.wallMapsta.put(new LocationXY(row, col), true);
                     } else if ('0' <= chr && chr <= '9') { // Agent.
-                        Agent newAgent = new Agent(colorSet.get(chr), new LocationXY(row,col), chr);
-                        this.initialState.agentMap.put(new LocationXY(row,col), new Agent(colorSet.get(chr), new LocationXY(row,col), chr));
-                        this.initialState.agentbyID.put(chr, new Agent(colorSet.get(chr), new LocationXY(row,col), chr));
-                        this.initialState.agentByCoordinate.put(new LocationXY(row,col), new Agent(colorSet.get(chr), new LocationXY(row,col), chr));
+                        if(hascolor){
+                            tcolor = colorSet.get(chr);
+                        }else{
+                            tcolor = "blue";
+                        }
+                        Agent newAgent = new Agent(tcolor, new LocationXY(row,col), chr);
+                        this.initialState.agentMap.put(new LocationXY(row,col), new Agent(tcolor, new LocationXY(row,col), chr));
+                        this.initialState.agentbyID.put(chr, new Agent(tcolor, new LocationXY(row,col), chr));
+                        this.initialState.agentByCoordinate.put(new LocationXY(row,col), new Agent(tcolor, new LocationXY(row,col), chr));
                         if(newAgent.getLabel() == '0'){
                             Node.setAgent0(newAgent);
                         }
                         currentState.agents.add(newAgent);
                         agents.add(newAgent);
                     } else if ('A' <= chr && chr <= 'Z') { // Box.
-                        Box newBox = new Box(colorSet.get(chr), new LocationXY(row,col), chr);
-                	this.initialState.boxMap.put(new LocationXY(row,col), new Box(colorSet.get(chr), new LocationXY(row,col), chr));
-                	this.initialState.boxMapsta.put(new LocationXY(row,col), new Box(colorSet.get(chr), new LocationXY(row,col), chr));
+                        if(hascolor){
+                            tcolor = colorSet.get(chr);
+                        }else{
+                            tcolor = "blue";
+                        }
+                        Box newBox = new Box(tcolor, new LocationXY(row,col), chr);
+                	this.initialState.boxMap.put(new LocationXY(row,col), new Box(tcolor, new LocationXY(row,col), chr));
+                	this.initialState.boxMapsta.put(new LocationXY(row,col), new Box(tcolor, new LocationXY(row,col), chr));
                 	this.initialState.currentbox = newBox;
                         currentState.addBox(newBox);
                         //currentState.addBox1(newBox);
                     } else if ('a' <= chr && chr <= 'z') { // Goal.
-                	this.initialState.goalMap.put(new LocationXY(col,row), new Goal(colorSet.get(chr), new LocationXY(col,row), chr));
-                	this.initialState.goalMapsta.put(new LocationXY(col,row), new Goal(colorSet.get(chr), new LocationXY(row,col), chr));
+                        if(hascolor){
+                            tcolor = colorSet.get(chr);
+                        }else{
+                            tcolor = "blue";
+                        }
+                	this.initialState.goalMap.put(new LocationXY(col,row), new Goal(tcolor, new LocationXY(col,row), chr));
+                	this.initialState.goalMapsta.put(new LocationXY(col,row), new Goal(tcolor, new LocationXY(row,col), chr));
                         Node.addGoal(new Goal(chr, new LocationXY(row, col)));
                     } else if (chr == ' ') {
                         // Free space.
                     } else {
-                        System.err.println("Error, read invalid level character: " + (int) chr);
+                        System.err.println("Error, read invalid level character: " + chr + " " + (int) chr + "at Row" + row + "at Col" + col);
                         System.exit(1);
                     }
                 }
                 row++;
             }
+            
+            
         }
         
         public boolean performActions() throws IOException {
@@ -222,7 +244,7 @@ public class SearchClient {
         
         public void findSubgoals(){
             Node.setGoalsPriority();
-            subGoals = new PriorityQueue<>(20, subGoalComparator);
+            subGoals = new PriorityQueue<>(30, subGoalComparator);
             for (Goal goal : Node.getGoalByLocation().values()){
                 subGoals.offer(goal);
             }
