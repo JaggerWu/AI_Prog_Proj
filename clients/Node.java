@@ -615,7 +615,6 @@ public class Node {
  * @return **********************************************/     
     
     public boolean changeState(Command[] commands, String[] serverOutput, SearchClient client){
-        System.err.println("changing");
         for(int i = 0; i < commands.length; i++){
             Agent activeAgent = this.getAgentById(Integer.toString(i).charAt(0));
             if(commands[i] != null && !serverOutput[i].equals("false")) {
@@ -827,7 +826,7 @@ public class Node {
         return expandedNodes;	
     }
 
-    private boolean cellIsFree(int row, int col) {
+    public boolean cellIsFree(int row, int col) {
         if(thisAgent.isClearMode()) {
             for (Agent agent : agents) {
                 if (agent.getLabel() != thisAgent.getLabel() && agent.getLocation().equals(new LocationXY(row, col))) {
