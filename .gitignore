@@ -1,6 +1,5 @@
 *.class
 ./idea
-*.jar
 *.rb
 .idea/*
 *.sublime-project

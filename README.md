@@ -95,5 +95,3 @@ git pull
 git checkout [your branch]
 git rebase master
 ```
-
-#### There is no Server
