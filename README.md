@@ -95,3 +95,11 @@ git pull
 git checkout [your branch]
 git rebase master
 ```
+
+### Which levels we can resolve
+* Multiple Agents
+```
+easy/MAYSoSirius.lvl  
+medium/MAsampdoria.lvl  
+short_solution/MARyther.lvl
+```

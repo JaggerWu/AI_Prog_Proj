@@ -58,18 +58,19 @@ public abstract class Heuristic implements Comparator<Node> {
                         }
                     }
                 }
-                if (command != null && (command.actionType == Command.Type.Push)){
+              if (command != null && (command.actionType == Command.Type.Push)){
                    int boxRow = targetBox.getLocation().getRow() + Command.dirToRowChange(command.dir2);
                    int boxCol = targetBox.getLocation().getCol() + Command.dirToColChange(command.dir2);
                    Box possibleBox2 = n.getBoxByLocation().get(new LocationXY(boxRow,boxCol));
-                    if(possibleBox2 != null){
+                    if(possibleBox2 != null && !(currentSubGoal.getLocation().getRow() == targetBox.getLocation().getRow() &&
+                                                    currentSubGoal.getLocation().getCol() == targetBox.getLocation().getCol())){
                         HeuristicDistance += 200;//200
                         if(possibleBox2.isBoxInFinalPosition()){
                             HeuristicDistance += 2000;//2000
                         }
                     }
                     for(Agent a : n.agents){
-                        if(a.getLocation().equals(new LocationXY(boxRow,boxCol))){
+                        if(a.getLabel() != n.thisAgent.getLabel() && a.getLocation().equals(new LocationXY(boxRow,boxCol))){
                             HeuristicDistance += 200;//200
                         }
                     }
