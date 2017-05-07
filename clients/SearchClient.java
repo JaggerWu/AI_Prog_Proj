@@ -50,7 +50,7 @@ public class SearchClient {
                         System.err.println("Agent " + agent.getLabel() + " finding solution for goal " + agent.getCurrentSubGoal().getId());
                         Node myinitalState = currentState.getCopy();
                         myinitalState.thisAgent = agent;
-                        agent.setStrategy(new StrategyBestFirst(new AStar(myinitalState)));
+                        agent.setStrategy(new StrategyBestFirst(new WeightedAStar(myinitalState,10)));
                         //agent.setStrategy(new StrategyBFS());
                         LinkedList<Node> plan = search(agent.getStrategy(), myinitalState);
                         //System.err.println(plan);

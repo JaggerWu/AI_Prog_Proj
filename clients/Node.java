@@ -578,7 +578,13 @@ public class Node {
                     break;
                 case Pull:
                     // Cell is free where agent is going
-                    if (cellIsFree(newAgentRow, newAgentCol)) {
+                    //System.err.println(newAgentRow + "," + newAgentCol);
+                    //System.err.println((cellIsFree(newAgentRow-1, newAgentCol) + "," + wallMap.containsKey(new LocationXY(newAgentRow, newAgentCol-1)) +""+ wallMap.containsKey(new LocationXY(newAgentRow, newAgentCol+1))));
+                    if (cellIsFree(newAgentRow, newAgentCol) /*&& 
+                            !(cellIsFree(newAgentRow-1, newAgentCol) && wallMap.containsKey(new LocationXY(newAgentRow, newAgentCol-1)) && wallMap.containsKey(new LocationXY(newAgentRow, newAgentCol+1))) &&
+                            !(cellIsFree(newAgentRow+1, newAgentCol) && wallMap.containsKey(new LocationXY(newAgentRow, newAgentCol-1)) && wallMap.containsKey(new LocationXY(newAgentRow, newAgentCol+1))) &&
+                            !(cellIsFree(newAgentRow, newAgentCol-1) && wallMap.containsKey(new LocationXY(newAgentRow-1, newAgentCol)) && wallMap.containsKey(new LocationXY(newAgentRow+1, newAgentCol))) &&
+                            !(cellIsFree(newAgentRow, newAgentCol+1) && wallMap.containsKey(new LocationXY(newAgentRow-1, newAgentCol)) && wallMap.containsKey(new LocationXY(newAgentRow+1, newAgentCol)))*/ ) {
                         int boxRow = this.thisAgent.getLocation().getRow() + Command.dirToRowChange(command.dir2);
                         int boxCol = this.thisAgent.getLocation().getCol() + Command.dirToColChange(command.dir2);
                         // .. and there's a box in "dir2" of the agent
@@ -639,7 +645,7 @@ public class Node {
                             if(activeAgent.getCurrentSubGoal() != null && activeAgent.getCurrentSubGoal().getLocation().equals(pullBoxNew.getLocation()) && !activeAgent.isClearMode()) {
                                
                                 pullBoxNew.setInFinalPosition(true);
-                                System.err.println("Set in final position");
+                                System.err.println("Set Box " + pullBoxNew.getId() + " in final position");
                             }
                             activeAgent.setCoordinate(newPos);
                             boxMapByLocation.put(pullBoxNew.getLocation(), pullBoxNew);
@@ -670,7 +676,8 @@ public class Node {
                             activeAgent.setCoordinate(newPos);
                             if(activeAgent.getCurrentSubGoal() != null && activeAgent.getCurrentSubGoal().getLocation().equals(pushBoxNew.getLocation()) && !activeAgent.isClearMode()) {
                                 pushBoxNew.setInFinalPosition(true);
-                                System.err.println("Set in final position");
+
+                                System.err.println("Set Box " + pushBoxNew.getId() + " in final position");
                             }
                             boxMapByLocation.put(pushBoxNew.getLocation(), pushBoxNew);
                             for(Goal goal : goalMapByLocation.values()){
