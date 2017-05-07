@@ -1,6 +1,7 @@
 package clients;
 
 import clients.Heuristic.AStar;
+import clients.Heuristic.WeightedAStar;
 import clients.Strategy.StrategyBestFirst;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -237,7 +238,7 @@ public class Agent {
         clearCords = coordinates;
         Node myCurrentState = currentState.getCopy();
         myCurrentState.thisAgent = this;
-        this.setStrategy(new StrategyBestFirst(new AStar(myCurrentState)));
+        this.setStrategy(new StrategyBestFirst(new WeightedAStar(myCurrentState,10)));
         LinkedList<Node> plan = SearchClient.search(this.getStrategy(), myCurrentState);
         if(plan != null) {
             this.appendSolution(plan);
