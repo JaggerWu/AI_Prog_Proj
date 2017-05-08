@@ -54,35 +54,35 @@ This option may help if you experience low framerates or server instability when
 Windows defaults to Direct3D and does not require this.
     
 An example invocation of the server with command-line interface:
-* Windows:   ```$ java -jar server.jar -l levels_map\levels/MAsimple1.lvl -c "java sampleclients.RandomWalkClient"```
+* Windows:   ```$ java -jar server.jar -l levels_map/levels/MAsimple1.lvl -c "java sampleclients.RandomWalkClient"```
 
-* Linux/Mac: ```$ java -jar server.jar -l levels_map\levels/MAsimple1.lvl -c "java sampleclients.RandomWalkClient"```
+* Linux/Mac: ```$ java -jar server.jar -l levels_map/levels/MAsimple1.lvl -c "java sampleclients.RandomWalkClient"```
     
 Without the -g argument, the server prints a string representation of the current state to the console.   
 
 To minimize overhead (e.g. when optimizing your client) this output may be redirected to the null device using:
-* Windows:   ```$ java -jar server.jar -l levels_map\levels/MAsimple1.lvl -c "java sampleclients.RandomWalkClient" > NUL```
+* Windows:   ```$ java -jar server.jar -l levels_map/levels/MAsimple1.lvl -c "java sampleclients.RandomWalkClient" > NUL```
 
-* Linux/Mac: ```$ java -jar server.jar -l levels_map\levels/MAsimple1.lvl -c "java sampleclients.RandomWalkClient" > /dev/null```   
+* Linux/Mac: ```$ java -jar server.jar -l levels_map/levels/MAsimple1.lvl -c "java sampleclients.RandomWalkClient" > /dev/null```   
 
 ***Note*** that both messages from the client and important server messages (including success) both use 'standard error' for printing to console, hence they bypass this redirection.
     
 To test the effect of actions you can try the user controlled client:   
-* Windows: ```$ java -jar server.jar -l levels_map\levels/SAsokobanLevel96.lvl -c "java sampleclients.GuiClient" -g 200```
+* Windows: ```$ java -jar server.jar -l levels_map/levels/SAsokobanLevel96.lvl -c "java sampleclients.GuiClient" -g 200```
 
-* Linux:   ```$ java -Dsun.java2d.opengl=true -jar server.jar -l levels_map\levels/SAsokobanLevel96.lvl -c "java sampleclients.GuiClient" -g 200```
+* Linux:   ```$ java -Dsun.java2d.opengl=true -jar server.jar -l levels_map/levels/SAsokobanLevel96.lvl -c "java sampleclients.GuiClient" -g 200```
     
 GuiClient works by creating a joint action of identical individual actions for each agent on the level; e.g. clicking `Move(W)` on a level with 3 agents sends `[Move(W),Move(W),Move(W)]`.  
 For each argument passed to GuiClient, a custom text field is created with that joint action; e.g.:
-* Windows: ```$ java -jar server.jar -l levels_map\levels/MAsimple3.lvl -c "java sampleclients.GuiClient [NoOp,Push(E,E)] [Push(E,E),Push(E,N)] [Push(E,E),Pull(W,N)] [Pull(W,E),NoOp]" -g 100```
+* Windows: ```$ java -jar server.jar -l levels_map/levels/MAsimple3.lvl -c "java sampleclients.GuiClient [NoOp,Push(E,E)] [Push(E,E),Push(E,N)] [Push(E,E),Pull(W,N)] [Pull(W,E),NoOp]" -g 100```
 
-* Linux:   ```$ java -Dsun.java2d.opengl=true -jar server.jar -l levels_map\levels/MAsimple3.lvl -c "java sampleclients.GuiClient [NoOp,Push(E,E)] [Push(E,E),Push(E,N)] [Push(E,E),Pull(W,N)] [Pull(W,E),NoOp]" -g 100```   
+* Linux:   ```$ java -Dsun.java2d.opengl=true -jar server.jar -l levels_map/levels/MAsimple3.lvl -c "java sampleclients.GuiClient [NoOp,Push(E,E)] [Push(E,E),Push(E,N)] [Push(E,E),Pull(W,N)] [Pull(W,E),NoOp]" -g 100```   
 fills the custom commands upon startup.
     
 To try out the included ruby random walk client (requires a ruby intepreter in your environment):
-* Windows: ```$ java -jar server.jar -l levels_map\levels/MApacman.lvl -c "ruby client/random_agent.rb 3" -g -p```
+* Windows: ```$ java -jar server.jar -l levels_map/levels/MApacman.lvl -c "ruby client/random_agent.rb 3" -g -p```
 
-* Linux:   ```$ java -Dsun.java2d.opengl=true -jar server.jar -l levels_map\levels/MApacman.lvl -c "ruby client/random_agent.rb 3" -g -p```   
+* Linux:   ```$ java -Dsun.java2d.opengl=true -jar server.jar -l levels_map/levels/MApacman.lvl -c "ruby client/random_agent.rb 3" -g -p```   
 
 The argument passed to random_agent.rb is the number of agents on the level
 
@@ -97,6 +97,9 @@ git rebase master
 ```
 
 ### Which levels we can resolve
+* Single Agent
+```
+```
 * Multiple Agents
 ```
 easy/MAYSoSirius.lvl  
