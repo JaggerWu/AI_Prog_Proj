@@ -37,7 +37,7 @@ public class Node {
     public List<Agent> agents = new ArrayList<>();
     public HashMap<LocationXY, Agent> agentByCoordinate = new HashMap<>();
 
-    private HashMap<LocationXY, Box> boxMapByLocation = new HashMap<>();
+    public HashMap<LocationXY, Box> boxMapByLocation = new HashMap<>();
     private HashMap<Character, Box> boxMapByID = new HashMap<>();
 
    // private static HashMap<LocationXY, Box> boxMapByLocation1 = new HashMap<LocationXY, Box>();
@@ -837,15 +837,18 @@ public class Node {
         if(thisAgent.isClearMode()) {
             for (Agent agent : agents) {
                 if (agent.getLabel() != thisAgent.getLabel() && agent.getLocation().equals(new LocationXY(row, col))) {
+                    //System.err.println("agent here ");
                     return false;
                 }
             }
         }
         Box box = boxMapByLocation.get(new LocationXY(row, col));
         boolean noBox;
-        if(box == null || box.getColor() != null && !box.getColor().equals(thisAgent.getColor())){
+        if(box == null){
+            //System.err.println("box not here");
             noBox = true;
         } else {
+            //System.err.println("box here");
             noBox = false;
         }
         return (Node.wallMap.get(new LocationXY(row, col)) == null && noBox);

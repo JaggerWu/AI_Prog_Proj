@@ -54,57 +54,36 @@ public abstract class Heuristic implements Comparator<Node> {
                         HeuristicDistance += 4;
                         Box otherBox = n.getBoxByLocation().get(new LocationXY(boxRow, boxCol));
                         if(otherBox != null && otherBox.isBoxInFinalPosition()){
-                            HeuristicDistance += 100;//1000
+                            HeuristicDistance += 100;//100
                         }
                     }
                 }
-                
-                
-                if(command != null && (command.actionType == Command.Type.Pull)){
+
+                 if(command != null && (command.actionType == Command.Type.Pull)){
                     int AgentRow = n.thisAgent.getLocation().getRow();
                     int AgentCol = n.thisAgent.getLocation().getCol();
                     if(Node.wallMap.containsKey(new LocationXY(AgentRow, AgentCol-1)) && Node.wallMap.containsKey(new LocationXY(AgentRow, AgentCol+1))){
-                        HeuristicDistance += 5;
+                        HeuristicDistance += 0.5;
                     }
-                    
+
                     if(Node.wallMap.containsKey(new LocationXY(AgentRow-1, AgentCol)) && Node.wallMap.containsKey(new LocationXY(AgentRow+1, AgentCol))){
-                        HeuristicDistance += 5;
+                        HeuristicDistance += 0.5;
                     }
-                    
-                    
+
                 }
                 
-                if (command != null && (command.actionType == Command.Type.Push)){
-                     int boxRow = targetBox.getLocation().getRow() + Command.dirToRowChange(command.dir2);
-                     int boxCol = targetBox.getLocation().getCol() + Command.dirToColChange(command.dir2);
-                     Box possibleBox2 = n.getBoxByLocation().get(new LocationXY(boxRow,boxCol));
-                      if(possibleBox2 != null && !(currentSubGoal.getLocation().getRow() == targetBox.getLocation().getRow() &&
-                                                      currentSubGoal.getLocation().getCol() == targetBox.getLocation().getCol())){
-                          HeuristicDistance += 20;//200
-                          if(possibleBox2.isBoxInFinalPosition()){
-                              HeuristicDistance += 200;//2000
-                          }
-                      }
-                      for(Agent a : n.agents){
-                          if(a.getLabel() != n.thisAgent.getLabel() && a.getLocation().equals(new LocationXY(boxRow,boxCol))){
-                              HeuristicDistance += 20;//200
-                          }
-                      }
-                  }
-                
-                // if the thisAgent next movement conflict with an anther agent then the Heuristic will be worsen.
                 for(Agent a : n.agents){
                     if(a.getLabel() != n.thisAgent.getLabel() && a.getLocation().equals(n.thisAgent.getLocation())){
-                        HeuristicDistance += 20;//200
+                        HeuristicDistance += 20;//20
                     }
                 }
                 // if the thisAgent next movement conflict with a box then the Heuristic will be worsen.
                 // if the box is in final position then  the Heuristic will become even worsen.
                 Box possibleBox = n.getBoxByLocation().get(n.thisAgent.getLocation());
                 if(possibleBox != null){
-                    HeuristicDistance += 20;//200
+                    HeuristicDistance += 20;//20
                     if(possibleBox.isBoxInFinalPosition()){
-                        HeuristicDistance += 200;//2000
+                        HeuristicDistance += 200;//200
                     }
                 }
                 

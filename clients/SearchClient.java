@@ -47,13 +47,12 @@ public class SearchClient {
                 for (Agent agent : currentState.agents) {
                     agent.tryToFindNextGoal(currentState, subGoals);
                     if(!agent.isQuarantined() && !agent.isDone) {
-                        System.err.println("Agent " + agent.getLabel() + " finding solution for goal " + agent.getCurrentSubGoal().getId());
+                        System.err.println("Agent " + agent.getLabel() + " is trying to find solution for goal " + agent.getCurrentSubGoal().getId());
                         Node myinitalState = currentState.getCopy();
                         myinitalState.thisAgent = agent;
                         agent.setStrategy(new StrategyBestFirst(new WeightedAStar(myinitalState,10)));
-                        //agent.setStrategy(new StrategyBFS());
                         LinkedList<Node> plan = search(agent.getStrategy(), myinitalState);
-                        //System.err.println(plan);
+                        System.err.println(plan);
                         if(plan != null) {
                             agent.appendSolution(plan);
                         } else {

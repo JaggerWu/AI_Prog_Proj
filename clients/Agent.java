@@ -139,7 +139,7 @@ public class Agent {
     }
 
     public void tryToFindNextGoal(Node currentState, PriorityQueue<Goal> subGoals){
-        if(currentGoal != null){
+        if(currentGoal != null){ //if current goal is done then set currentgoal to null
             Box goalBox = currentState.getBoxByLocation().get(currentGoal.getLocation());
             if(goalBox != null && goalBox.getId() == Character.toUpperCase(currentGoal.getId())){
                 currentGoal = null;
@@ -147,7 +147,7 @@ public class Agent {
                 return;
             }
         }
-        if(color == null){
+        if(color == null){ // single agent then get a goal from subGoal list
             currentGoal = subGoals.poll();
             isDone = false;
         } else {
