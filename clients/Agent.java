@@ -25,6 +25,8 @@ public class Agent {
     private Node latestAction = null;
     private Agent quarantinedBy;
     private boolean agentBackMode = false;
+    public LocationXY doingcell;
+    public char doingthing;
 
     public Agent(){
         this.location = new LocationXY();

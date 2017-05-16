@@ -35,6 +35,7 @@ public class Node {
     public static Agent agent0 = null;
     public static List<Agent> orignalAgents = new ArrayList<Agent>() ;
     public Agent thisAgent = null;
+    public Box thisBox = null;
     public List<Agent> agents = new ArrayList<>();
     public HashMap<LocationXY, Agent> agentByCoordinate = new HashMap<>();
 
@@ -184,6 +185,19 @@ public class Node {
         return false;
     }
 
+    
+    public boolean isClearState(ArrayList<LocationXY> locs){
+    	System.err.println("Is clear state : " + thisAgent.getLabel() + " pos " + thisAgent.getLocation());
+    	if(locs.contains(thisAgent.getLocation())){
+    		return false;
+    	}
+    	if(thisBox == null)System.err.println("no box clear state");
+    	if(thisBox != null && locs.contains(thisBox.getLocation())){
+    		return false;
+    	}
+    	return true;
+    }
+    
     public void setParent(Node parent){
         if(parent == null){
             this.parent = null;
@@ -203,6 +217,7 @@ public class Node {
         }
         for (Agent agent : this.agents){
             copy.agents.add(agent.clone());
+            copy.agentMap.put(agent.clone().getLocation(), agent.clone());
         }
         return copy;
     }
@@ -590,6 +605,10 @@ public class Node {
                         n.action = command;
                         n.thisAgent.getLocation().setRow(newAgentRow);
                         n.thisAgent.getLocation().setCol(newAgentCol);
+                        n.agentMap.remove(this.thisAgent.getLocation());
+                        n.agentMap.put(n.thisAgent.getLocation(), n.thisAgent);
+                        n.agentbyID.remove(this.thisAgent.getLabel());
+                        n.agentbyID.put(n.thisAgent.getLabel(), n.thisAgent);
                         expandedNodes.add(n);
                     }   break;
                 case Push:
@@ -613,6 +632,13 @@ public class Node {
                             n.boxMapByLocation.remove(new LocationXY(newAgentRow, newAgentCol));
                             n.boxMapByID.remove(boxToMoveCopy.getId());
                             n.boxMapByID.put(boxToMoveCopy.getId(), boxToMoveCopy);
+                            n.agentMap.remove(this.thisAgent.getLocation());
+                            n.agentMap.put(n.thisAgent.getLocation(), n.thisAgent);
+                            n.agentbyID.remove(this.thisAgent.getLabel());
+                            n.agentbyID.put(n.thisAgent.getLabel(), n.thisAgent);
+                            if(this.thisBox != null){
+                            	n.thisBox = boxToMoveCopy;
+                            }
                             expandedNodes.add(n);
                         }
                     }
@@ -646,6 +672,15 @@ public class Node {
                             n.boxMapByID.put(boxToMoveCopy.getId(), boxToMoveCopy);
                             n.thisAgent.getLocation().setRow(newAgentRow);
                             n.thisAgent.getLocation().setCol(newAgentCol);
+                            n.thisAgent.getLocation().setRow(newAgentRow);
+                            n.thisAgent.getLocation().setCol(newAgentCol);
+                            n.agentMap.remove(this.thisAgent.getLocation());
+                            n.agentMap.put(n.thisAgent.getLocation(), n.thisAgent);
+                            n.agentbyID.remove(this.thisAgent.getLabel());
+                            n.agentbyID.put(n.thisAgent.getLabel(), n.thisAgent);
+                            if(this.thisBox != null){
+                            	n.thisBox = boxToMoveCopy;
+                            }
                             expandedNodes.add(n);
                         }
                     }   break;
@@ -910,6 +945,7 @@ public class Node {
             copy.agents.add(agent.clone());
         }
         copy.thisAgent = this.thisAgent.clone();
+        if(this.thisBox != null)copy.thisBox = new Box(thisBox.getId(), thisBox.getColor(), thisBox.getLocation(), thisBox.isBoxInFinalPosition());
         return copy;
     }
 
@@ -1010,6 +1046,11 @@ public class Node {
         if(!this.thisAgent.getLocation().theSamePlace(other.thisAgent.getLocation())){
             return false;
         }
+        if(this.thisBox != null){
+        	if(this.thisBox.getLocation().theSamePlace(other.thisAgent.getLocation())){
+        		return false;
+        	}
+        }
         return true;	
     }
 
@@ -1034,10 +1075,12 @@ public class Node {
                 }else if (this.wallMap.containsKey(loc)) {
                     s.append("+");
                 //} else if (row == this.agentRow && col == this.agentCol) {
-                }else if (this.agentByCoordinate.containsKey(loc)) {
-                    s.append(this.agentByCoordinate.get(loc).getLabel());
+                }else if (this.agentMap.containsKey(loc)) {
+                    s.append(this.agentMap.get(loc).getLabel());
                 }else if(this.thisAgent.getLocation().theSamePlace(loc)){
                     s.append(this.thisAgent.getLabel());
+                }else if(this.thisBox != null && this.thisAgent.getLocation().theSamePlace(loc)){
+                	s.append(this.thisBox.getId());
                 }else
                 {
                     s.append(" ");
