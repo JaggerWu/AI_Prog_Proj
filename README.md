@@ -99,6 +99,32 @@ git rebase master
 ### Which levels we can resolve
 * Single Agent
 ```
+  1 "competition_levels/SAAIoliMAsh.lvl",
+  2 "competition_levels/SABeliebers.lvl",  // solved action 495
+  3 "competition_levels/SABlinky.lvl",     // solved action 148
+  4 "competition_levels/SABoxBunny.lvl",  // error
+  5 "competition_levels/SABronies.lvl",   // can not sovle
+  6 "competition_levels/SADAT.lvl",  // can not sovle
+  7 "competition_levels/SADoDo.lvl",  // solved action 263
+  8 "competition_levels/SAEvilCorp.lvl", //can not sovle
+  9 "competition_levels/SAFooBar.lvl",
+ 10 "competition_levels/SAGeneralAI.lvl",
+ 11 "competition_levels/SAgroupname.lvl",  // solved action 3959
+ 12 "competition_levels/SAGroupOne.lvl",
+ 13 "competition_levels/SAHALnineK.lvl",  // shabi
+ 14 "competition_levels/SAHiveMind.lvl",  // solve
+ 15 "competition_levels/SAIamGreedy.lvl",  // time out
+ 16 "competition_levels/SAJomarki.lvl", // solve  action 72
+ 17 "competition_levels/SAKalle.lvl",
+ 18 "competition_levels/SALemmings.lvl", // solve  action 116
+ 19 "competition_levels/SALiquorice.lvl",  // solve  action 99
+ 20 "competition_levels/SAMasAiArne.lvl",  // solve  action 614
+ 21 "competition_levels/SAMASters.lvl",
+ 22 "competition_levels/SANeverMind.lvl",  // solve
+ 23 "competition_levels/SAOmnics.lvl",  // solve
+ 24 "competition_levels/SATALK.lvl",  // solve  action 258
+ 25 "competition_levels/SAtnrbts.lvl",
+
 ```
 * Multiple Agents
 ```

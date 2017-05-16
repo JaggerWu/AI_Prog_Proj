@@ -2,6 +2,7 @@ package clients;
 
 import clients.Heuristic.AStar;
 import clients.Heuristic.WeightedAStar;
+import static clients.SearchClient.search;
 import clients.Strategy.StrategyBestFirst;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -23,6 +24,7 @@ public class Agent {
     private Strategy strategy;
     private Node latestAction = null;
     private Agent quarantinedBy;
+    private boolean agentBackMode = false;
 
     public Agent(){
         this.location = new LocationXY();
@@ -113,6 +115,14 @@ public class Agent {
     public void setClearMode(boolean clearMode) {
         this.clearMode = clearMode;
     }
+    
+    public boolean isAgentBackMode() {
+        return agentBackMode;
+    }
+
+    public void setAgentBackMode(boolean agentBack) {
+        this.agentBackMode = agentBack;
+    }
 
     public ArrayList<LocationXY> getClearCords() {
         return clearCords;
@@ -153,7 +163,7 @@ public class Agent {
         } else {
             for(Goal goal : subGoals){
                 for(Box box : currentState.getBoxByLocation().values()){
-                    if(box.getColor().equals(color) && box.getId() == Character.toUpperCase(goal.getId())){
+                    if(box.getId() == Character.toUpperCase(goal.getId()) && box.getColor().equals(color) ){
                         currentGoal = goal;
                         subGoals.remove(goal);
                         isDone = false;
@@ -251,6 +261,33 @@ public class Agent {
         quarantined = true;
         quarantinedBy = sender;
     }
+    
+    public void requestAgentGoBack(Node currentState) {
+        solution.clear();
+        System.err.println("This is request go back ??????");
+        this.setAgentBackMode(true);
+        System.err.println("gobackmode = " + this.isAgentBackMode());
+        Node myCurrentState = currentState.getCopy();
+        myCurrentState.thisAgent = this;
+        System.err.println("Print state");
+        myCurrentState.printState();
+        System.err.println("requestAgentGoBack before setStrategy:         " + myCurrentState.thisAgent.isAgentBackMode());
+        this.setStrategy(new StrategyBestFirst(new WeightedAStar(myCurrentState,10)));
+        System.err.println("requestAgentGoBack after setStrategy:         " + myCurrentState.thisAgent.isAgentBackMode());
+        System.err.println("isAgentBackMode1:            " + this.isAgentBackMode());
+        LinkedList<Node> plan = search(this.getStrategy(), myCurrentState);
+        System.err.println("requestAgentGoBack after plan:         " + myCurrentState.thisAgent.isAgentBackMode());
+        System.err.println("isAgentBackMode2:            " + this.isAgentBackMode());
+        System.err.println(plan);
+        if(plan != null) {
+            this.appendSolution(plan);
+        } else {
+            System.err.println("Solution could not be found");
+        }
+        System.err.println("Agent return back done before.-------------------------------------------------------" + this.isAgentBackMode());
+        this.setAgentBackMode(false);
+        System.err.println("Agent return back done after.-------------------------------------------------------" + this.isAgentBackMode());
+    }
 
     @Override
     public Agent clone() {
@@ -287,4 +324,6 @@ public class Agent {
         }
         else return null;
     }
+
+    
 }

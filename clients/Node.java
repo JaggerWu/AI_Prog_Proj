@@ -33,6 +33,7 @@ public class Node {
     public  static HashMap<LocationXY, Boolean> wallMap = new HashMap<>();
     /******************************************************/
     public static Agent agent0 = null;
+    public static List<Agent> orignalAgents = new ArrayList<Agent>() ;
     public Agent thisAgent = null;
     public List<Agent> agents = new ArrayList<>();
     public HashMap<LocationXY, Agent> agentByCoordinate = new HashMap<>();
@@ -146,14 +147,16 @@ public class Node {
     }
 
     public boolean isGoalState() {
-        if(!thisAgent.isClearMode()) {
-            Goal goal = thisAgent.getCurrentSubGoal();
-            Box box = boxMapByLocation.get(goal.getLocation());
-            if (box != null && box.getId() == Character.toUpperCase(goal.getId())) {
-                box.setInFinalPosition(true);
-                return true;
+    	Agent orignalAgent = null;
+    	for(Agent agent : Node.orignalAgents){
+            if(agent.getLabel() == thisAgent.getLabel()){
+                orignalAgent = agent;
             }
-        } else {
+    	}
+       // System.err.println("isGoalState orignalAgent location:  " + orignalAgent.getLocation());
+       // System.err.println("isGoalState this agent location:  " + thisAgent.getLocation() + "  Agent:  " + thisAgent.getLabel() + "  isAgentBackMode: "+thisAgent.isAgentBackMode());
+    	//System.err.println("this agent is go back mode :   "+thisAgent.isAgentBackMode());
+        if(thisAgent.isClearMode()) {
             for(LocationXY cord : thisAgent.getClearCords()){
                 Box box = boxMapByLocation.get(cord);
                 if(thisAgent.getLocation().equals(cord)){
@@ -163,6 +166,20 @@ public class Node {
                 }
             }
             return true;
+        }else if(SearchClient.agentGoback){
+            System.err.println("Agent trying to go back.");
+            if(thisAgent.getLocation().getRow() == orignalAgent.getLocation().getRow() 
+                    && thisAgent.getLocation().getCol() == orignalAgent.getLocation().getCol() ){
+                System.err.println("Agent back to orignal location.");
+                return true;
+            }
+        } else {
+            Goal goal = thisAgent.getCurrentSubGoal();
+            Box box = boxMapByLocation.get(goal.getLocation());
+            if (box != null && box.getId() == Character.toUpperCase(goal.getId())) {
+                box.setInFinalPosition(true);
+                return true;
+            }
         }
         return false;
     }
@@ -265,6 +282,30 @@ public class Node {
         }       
     }
 
+    public static void deleteDeadBox(Node currentState){
+    	ArrayList<Box> tempBoxList = new ArrayList<Box>();
+    	for(LocationXY location : boxMapsta.keySet()){
+            Box box = boxMapsta.get(location);
+            //boolean isDeadBox = false;
+            //System.err.println("box ID is " +box.getId());
+            for(Goal goal : Node.goalDistance.keySet()){
+                if(goal.getId() == Character.toLowerCase(box.getId())){
+                    //System.err.println("goal ID is " +goal.getId());
+                    HashMap<LocationXY, Integer> distanceMap = goalDistance.get(goal);
+                    //System.err.println("distance + " + distanceMap.get(box.getLocation()));
+                    if(distanceMap.get(box.getLocation()) == null){
+                        //isDeadBox = true;
+                        tempBoxList.add(box);
+                    }
+                }
+            }
+    	}
+        for(Box box : tempBoxList){
+            boxMapsta.remove(box.getLocation());
+            //initialState.getBoxMapByLocation().remove(box.getLocation());
+            currentState.getBoxByLocation().remove(box.getLocation());
+    	}
+    }
 
     /*
      * Test and show the distance
@@ -350,7 +391,7 @@ public class Node {
                                             /*
                                              * swift the priority of two goals
                                              * */
-                                            if(goal.getPriority() >=  enrtyPriority1.getKey().getPriority()){
+                                            if(goal.getPriority() >= enrtyPriority1.getKey().getPriority()){
                                                 int temp = enrtyPriority1.getKey().getPriority();
                                                 enrtyPriority1.getKey().setPriority(goal.getPriority());
                                                 goal.setPriority(temp);
@@ -844,7 +885,8 @@ public class Node {
         }
         Box box = boxMapByLocation.get(new LocationXY(row, col));
         boolean noBox;
-        if(box == null){
+        if(box == null//){
+                || box.getColor() != null && !box.getColor().equals(thisAgent.getColor())){
             //System.err.println("box not here");
             noBox = true;
         } else {

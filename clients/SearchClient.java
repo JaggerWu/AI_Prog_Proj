@@ -3,6 +3,7 @@ package clients;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Stack;
@@ -28,6 +29,7 @@ public class SearchClient {
         private Boolean[] agentErrorState = null;
         private BufferedReader serverMessages = new BufferedReader(new InputStreamReader(System.in));
         private String[] latestServerOutput = null;
+        public static boolean agentGoback = false;
         /******************************************************/
         
 
@@ -37,6 +39,7 @@ public class SearchClient {
 	public SearchClient() throws Exception {
             loadMap();
             Node.computeGoalDistance();
+            Node.deleteDeadBox(currentState);
             //Node.showDistance();
             findSubgoals();
             latestActionArray = new Command[currentState.agents.size()];
@@ -44,7 +47,30 @@ public class SearchClient {
             serverMessages.readLine();
             boolean finished = false;
             while(!finished) {
-                for (Agent agent : currentState.agents) {
+            	ArrayList<Agent> orderedAgents = new ArrayList<Agent>();
+            	ArrayList<Integer> order = new ArrayList<Integer>();
+            	for(Goal goal : Node.priority.keySet()){
+            		//System.err.println("Goal " + goal.getId()+ "   " + "priority" + goal.getPriority());
+            		order.add(goal.getPriority());
+            	}
+            	
+            	Collections.sort(order);
+            	Collections.reverse(order);
+            	System.err.println(order);
+            	for(Integer i : order){
+                    for(Goal goal : Node.priority.keySet()){
+                        if(goal.getPriority() == i){
+                            orderedAgents.add(findNextGoal(goal));
+                        }
+                    }
+            	}
+            	
+            	for(Agent agent : orderedAgents){
+                    System.err.print(agent.getLabel()+ "   ");
+                    System.err.println();
+            	}
+            	
+                for (Agent agent : orderedAgents) {
                     agent.tryToFindNextGoal(currentState, subGoals);
                     if(!agent.isQuarantined() && !agent.isDone) {
                         System.err.println("Agent " + agent.getLabel() + " is trying to find solution for goal " + agent.getCurrentSubGoal().getId());
@@ -52,53 +78,134 @@ public class SearchClient {
                         myinitalState.thisAgent = agent;
                         agent.setStrategy(new StrategyBestFirst(new WeightedAStar(myinitalState,10)));
                         LinkedList<Node> plan = search(agent.getStrategy(), myinitalState);
-                        System.err.println(plan);
+                        //System.err.println(plan);
                         if(plan != null) {
                             agent.appendSolution(plan);
+                            boolean cont = true;
+                            while (cont) {
+                                cont = performActions();
+                                boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
+                                //currentState.printState();
+                                if(!status) {
+                                    currentState.printState();
+                                    System.exit(0);
+                                }
+                            }
+                            boolean error = false;
+                            for(int i = 0; i < latestServerOutput.length; i++){
+                                if(latestServerOutput[i] != null && latestServerOutput[i].equals("false")){
+                                    error = true;
+                                    agentErrorState[i] = true;
+                                    Agent failAgent = currentState.getAgentById(Integer.toString(i).charAt(0));
+                                    if(!currentState.agents.get(i).isQuarantined()) {
+                                        System.err.println("Agent number " + failAgent.getLabel() + " is requesting clear");
+                                        failAgent.requestClear(currentState);
+                                    }
+                                } else {
+                                    agentErrorState[i] = false;
+                                    System.err.println("Agent number " + currentState.agents.get(i).getLabel() + " is done with no error");
+                                    for(Agent a : currentState.getAgents()){
+                                        if(a.isQuarantined() && a.getQuarantinedBy().getLabel() == currentState.agents.get(i).getLabel()){
+                                            a.setQuarantined(false);
+                                        }
+                                    }
+                                }
+                            }
+                            if(error){
+                                while (performActions()) {
+                                    boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
+                                    if(!status) {
+                                        currentState.printState();
+                                        System.exit(0);
+                                    }
+                                }
+                            }
                         } else {
                             System.err.println("Solution could not be found");
                         }
                     }
-                }
-                boolean cont = true;
-                while (cont) {
-                    cont = performActions();
-                    boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
-                    //currentState.printState();
-                    if(!status) {
-                        currentState.printState();
-                        System.exit(0);
-                    }
-                }
-                boolean error = false;
-                for(int i = 0; i < latestServerOutput.length; i++){
-                    if(latestServerOutput[i] != null && latestServerOutput[i].equals("false")){
-                        error = true;
-                        agentErrorState[i] = true;
-                        Agent failAgent = currentState.getAgentById(Integer.toString(i).charAt(0));
-                        if(!currentState.agents.get(i).isQuarantined()) {
-                            System.err.println("Agent number " + failAgent.getLabel() + " is requesting clear");
-                            failAgent.requestClear(currentState);
-                        }
-                    } else {
-                        agentErrorState[i] = false;
-                        System.err.println("Agent number " + currentState.agents.get(i).getLabel() + " is done with no error");
-                        for(Agent a : currentState.getAgents()){
-                            if(a.isQuarantined() && a.getQuarantinedBy().getLabel() == currentState.agents.get(i).getLabel()){
-                                a.setQuarantined(false);
-                            }
-                        }
-                    }
-                }
-                if(error){
+                    //agentRequestBack(agent);
+                    //agent.setAgentBackMode(true);
+                   /* agent.requestAgentGoBack(currentState);
                     while (performActions()) {
                         boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
                         if(!status) {
                             currentState.printState();
                             System.exit(0);
                         }
+                    }*/
+                    /*System.err.println("This is request go back ??????");
+                    //agent.setAgentBackMode(true);
+                    this.agentGoback = true;
+                    System.err.println("gobackmode = " + agent.isAgentBackMode());
+                    Node myCurrentState1 = currentState.getCopy();
+                    myCurrentState1.thisAgent = agent;
+                    System.err.println("Print state");
+                    myCurrentState1.printState();
+                    agent.setStrategy(new StrategyBestFirst(new WeightedAStar(myCurrentState1,10)));
+                    System.err.println("isAgentBackMode1:            " + agent.isAgentBackMode());
+                    LinkedList<Node> plan1 = search(agent.getStrategy(), myCurrentState1);
+                    System.err.println("isAgentBackMode2:            " + agent.isAgentBackMode());
+                    System.err.println(plan1);
+                    if(plan1 != null) {
+                        agent.appendSolution(plan1);
+                        boolean cont1 = true;
+                        while (cont1) {
+                            cont1 = performActions();
+                            boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
+                            //currentState.printState();
+                            if(!status) {
+                                currentState.printState();
+                                System.exit(0);
+                            }
+                        }
+                    } else {
+                        System.err.println("Solution could not be found");
                     }
+                   // agent.setAgentBackMode(false);
+                   this.agentGoback = false;
+                   // System.err.println("Agent return back done.-------------------------------------------------------" + agent.isAgentBackMode());
+                    */
                 }
+//                boolean cont = true;
+//                while (cont) {
+//                    cont = performActions();
+//                    boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
+//                    //currentState.printState();
+//                    if(!status) {
+//                        currentState.printState();
+//                        System.exit(0);
+//                    }
+//                }
+//                boolean error = false;
+//                for(int i = 0; i < latestServerOutput.length; i++){
+//                    if(latestServerOutput[i] != null && latestServerOutput[i].equals("false")){
+//                        error = true;
+//                        agentErrorState[i] = true;
+//                        Agent failAgent = currentState.getAgentById(Integer.toString(i).charAt(0));
+//                        if(!currentState.agents.get(i).isQuarantined()) {
+//                            System.err.println("Agent number " + failAgent.getLabel() + " is requesting clear");
+//                            failAgent.requestClear(currentState);
+//                        }
+//                    } else {
+//                        agentErrorState[i] = false;
+//                        System.err.println("Agent number " + currentState.agents.get(i).getLabel() + " is done with no error");
+//                        for(Agent a : currentState.getAgents()){
+//                            if(a.isQuarantined() && a.getQuarantinedBy().getLabel() == currentState.agents.get(i).getLabel()){
+//                                a.setQuarantined(false);
+//                            }
+//                        }
+//                    }
+//                }
+//                if(error){
+//                    while (performActions()) {
+//                        boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
+//                        if(!status) {
+//                            currentState.printState();
+//                            System.exit(0);
+//                        }
+//                    }
+//                }
                 boolean agentsDone = true;
                 for(Agent a : currentState.agents){
                     if(a.getCurrentSubGoal() != null){
@@ -110,6 +217,25 @@ public class SearchClient {
                 }
             }          
 	}
+	
+	
+        public Agent findNextGoal(Goal goal){		
+            if(!subGoals.isEmpty()){
+                for (Box box : currentState.getBoxByLocation().values()) {
+                    if(Character.toUpperCase(goal.getId()) == box.getId()){
+                        for(Agent agent : currentState.agents){
+                            if(box.getColor().equals(agent.getColor())){
+                            //if(box.getColor() == agent.getColor()){
+                                return agent;
+                            }
+                        }
+                    }
+                }
+            }
+            return null ;
+	}
+
+
         
         private void loadMap() throws IOException {
             // Read lines specifying colors
@@ -157,6 +283,7 @@ public class SearchClient {
                         this.initialState.agentMap.put(new LocationXY(row,col), new Agent(tcolor, new LocationXY(row,col), chr));
                         this.initialState.agentbyID.put(chr, new Agent(tcolor, new LocationXY(row,col), chr));
                         this.initialState.agentByCoordinate.put(new LocationXY(row,col), new Agent(tcolor, new LocationXY(row,col), chr));
+                        Node.orignalAgents.add(new Agent(tcolor, new LocationXY(row,col), chr));
                         if(newAgent.getLabel() == '0'){
                             Node.setAgent0(newAgent);
                         }
@@ -194,6 +321,32 @@ public class SearchClient {
             }
             
             
+        }
+        public void agentRequestBack(Agent agent) throws IOException{
+            SearchClient.agentGoback = true;
+            Node myCurrentState1 = currentState.getCopy();
+            myCurrentState1.thisAgent = agent;
+            myCurrentState1.printState();
+            agent.setStrategy(new StrategyBestFirst(new WeightedAStar(myCurrentState1,10)));
+            LinkedList<Node> plan1 = search(agent.getStrategy(), myCurrentState1);
+            System.err.println(plan1);
+            if(plan1 != null) {
+                agent.appendSolution(plan1);
+                boolean cont = true;
+                while (cont) {
+                    cont = performActions();
+                    boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
+                    //currentState.printState();
+                    if(!status) {
+                        currentState.printState();
+                        System.exit(0);
+                    }
+                }
+            } else {
+                System.err.println("Solution could not be found");
+            }
+           // agent.setAgentBackMode(false);
+           SearchClient.agentGoback = false;
         }
         
         public boolean performActions() throws IOException {

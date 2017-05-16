@@ -12,10 +12,13 @@ public abstract class Heuristic implements Comparator<Node> {
     }
 
     public int h(Node n) {
-        if(!n.thisAgent.isClearMode()) {
-            return manhattanSubgoalHeuristic(n);
-        } else {
+        if(SearchClient.agentGoback) {
+            //System.err.println("I am -----------------------------------------");
+            return agentHeuristic(n);
+        } else if(n.thisAgent.isClearMode()){
             return clearModeHeuristic(n);
+        } else {
+            return manhattanSubgoalHeuristic(n);
             //return manhattanSubgoalHeuristic(n);
         }
     }
@@ -43,13 +46,12 @@ public abstract class Heuristic implements Comparator<Node> {
             }
             Command command = n.action;
             if(targetBox != null){
-                //calculate manhattan distance from this agent to targetBox + distance from targetBox to its goal.
                 HeuristicDistance =(Math.abs(n.thisAgent.getLocation().getRow() - targetBox.getLocation().getRow()) +
                             Math.abs(n.thisAgent.getLocation().getCol() - targetBox.getLocation().getCol())) + boxToSubGoalDistance;
                 if(command != null && !(command.actionType == Command.Type.Move)){
-                    //if the agent is moving boxes that is not the target box, the heuristic is worsened.
                     int boxRow = n.thisAgent.getLocation().getRow() + Command.dirToRowChange(command.dir2);
                     int boxCol = n.thisAgent.getLocation().getCol() + Command.dirToColChange(command.dir2);
+
                     if(!(boxRow == targetBox.getLocation().getRow() && boxCol == targetBox.getLocation().getCol() )){
                         HeuristicDistance += 4;
                         Box otherBox = n.getBoxByLocation().get(new LocationXY(boxRow, boxCol));
@@ -58,18 +60,19 @@ public abstract class Heuristic implements Comparator<Node> {
                         }
                     }
                 }
-
-                 if(command != null && (command.actionType == Command.Type.Pull)){
+                if(command != null && (command.actionType == Command.Type.Pull)){
                     int AgentRow = n.thisAgent.getLocation().getRow();
                     int AgentCol = n.thisAgent.getLocation().getCol();
-                    if(Node.wallMap.containsKey(new LocationXY(AgentRow, AgentCol-1)) && Node.wallMap.containsKey(new LocationXY(AgentRow, AgentCol+1))){
-                        HeuristicDistance += 0.5;
+                    
+                    int targetBoxNeighbouberRow = targetBox.getLocation().getRow();
+                    int targetBoxNeighbouberCol = targetBox.getLocation().getCol();
+                    if( !((Node.wallMap.containsKey(new LocationXY(targetBoxNeighbouberRow-1, targetBoxNeighbouberCol))) && (Node.wallMap.containsKey(new LocationXY(targetBoxNeighbouberRow+1, targetBoxNeighbouberCol)))) && Node.wallMap.containsKey(new LocationXY(AgentRow-1, AgentCol)) && Node.wallMap.containsKey(new LocationXY(AgentRow+1, AgentCol))){
+                        HeuristicDistance += 5;
                     }
-
-                    if(Node.wallMap.containsKey(new LocationXY(AgentRow-1, AgentCol)) && Node.wallMap.containsKey(new LocationXY(AgentRow+1, AgentCol))){
-                        HeuristicDistance += 0.5;
+                
+                    if( !((Node.wallMap.containsKey(new LocationXY(targetBoxNeighbouberRow, targetBoxNeighbouberCol-1))) && (Node.wallMap.containsKey(new LocationXY(targetBoxNeighbouberRow, targetBoxNeighbouberCol+1)))) && Node.wallMap.containsKey(new LocationXY(AgentRow, AgentCol-1)) && Node.wallMap.containsKey(new LocationXY(AgentRow, AgentCol+1))){
+                        HeuristicDistance += 5;
                     }
-
                 }
                 
                 for(Agent a : n.agents){
@@ -77,8 +80,6 @@ public abstract class Heuristic implements Comparator<Node> {
                         HeuristicDistance += 20;//20
                     }
                 }
-                // if the thisAgent next movement conflict with a box then the Heuristic will be worsen.
-                // if the box is in final position then  the Heuristic will become even worsen.
                 Box possibleBox = n.getBoxByLocation().get(n.thisAgent.getLocation());
                 if(possibleBox != null){
                     HeuristicDistance += 20;//20
@@ -95,7 +96,29 @@ public abstract class Heuristic implements Comparator<Node> {
         } else {
             System.err.println("Heuristics: No goal found.");
         }
+        //System.err.println("HeuristicDistance:  " + HeuristicDistance);
         return HeuristicDistance;
+    }
+    
+    public int agentHeuristic(Node n){
+       // System.err.println("This is agent heuristic ??????");
+        int heuristicDistance = 0;
+        Agent orginalAgent = null ;
+        for(Agent agent : Node.orignalAgents){
+            if(agent.getLabel() == n.thisAgent.getLabel()){
+                orginalAgent = agent;
+            }
+        }
+       // System.err.println("This is thisAgent " + n.thisAgent.getLocation());
+       // System.err.println("This is orignalAgent " + orginalAgent.getLocation());
+        heuristicDistance =Math.abs(n.thisAgent.getLocation().getRow() - orginalAgent.getLocation().getRow()) +
+                            Math.abs(n.thisAgent.getLocation().getCol() - orginalAgent.getLocation().getCol());
+        Command command = n.action;
+        if(command != null && !(command.actionType == Command.Type.Move)){
+            heuristicDistance += 10;
+        }
+       // System.err.println("heuristicDistance = " + heuristicDistance);
+        return heuristicDistance;
     }
     
     public int clearModeHeuristic(Node n){
