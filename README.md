@@ -128,7 +128,30 @@ git rebase master
 ```
 * Multiple Agents
 ```
-easy/MAYSoSirius.lvl  
-medium/MAsampdoria.lvl  
-short_solution/MARyther.lvl
+ 28"competition_levels/MAAIoliMAsh.lvl",
+ 29 "competition_levels/MABeliebers.lvl",     MAYBE
+ 30 "competition_levels/MABlinky.lvl",   solved
+ 31 "competition_levels/MABoxBunny.lvl",  
+ 32 "competition_levels/MABronies.lvl",   MAYBE
+ 33 "competition_levels/MADAT.lvl",  
+ 34 "competition_levels/MADoDo.lvl",   solved
+ 35 "competition_levels/MAEvilCorp.lvl", 
+ 36 "competition_levels/MAFooBar.lvl",  MAYBE
+ 37 "competition_levels/MAGeneralAI.lvl",
+ 38 "competition_levels/MAgroupname.lvl", solved
+ 39 "competition_levels/MAGroupOne.lvl",   ERROR
+ 40 "competition_levels/MAHALnineK.lvl",   
+ 41 "competition_levels/MAHiveMind.lvl",
+ 42 "competition_levels/MAIamGreedy.lvl",
+ 43 "competition_levels/MAJomarki.lvl",  solved
+ 44 "competition_levels/MAKalle.lvl",   solved
+ 45 "competition_levels/MALemmings.lvl", solved
+ 46 "competition_levels/MALiquorice.lvl",  MAYBE
+ 47 "competition_levels/MAMasAiArne.lvl",  MAYBE
+ 48 "competition_levels/MAMASters.lvl",
+ 49 "competition_levels/MANeverMind.lvl", MAYBE
+ 50 "competition_levels/MAOmnics.lvl",  
+ 51 "competition_levels/MATALK.lvl",  
+ 52 "competition_levels/MAtnrbts.lvl", MAYBE
+
 ```

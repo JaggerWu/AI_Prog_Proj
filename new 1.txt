@@ -1,25 +1,52 @@
 "competition_levels/SAAIoliMAsh.lvl",
-"competition_levels/SABeliebers.lvl",  // solved action 495
-"competition_levels/SABlinky.lvl",     // solved action 148
-"competition_levels/SABoxBunny.lvl",  // error 
-"competition_levels/SABronies.lvl",   // can not sovle
-"competition_levels/SADAT.lvl",  // can not sovle
-"competition_levels/SADoDo.lvl",  // solved action 263
-"competition_levels/SAEvilCorp.lvl", //can not sovle
+"competition_levels/SABeliebers.lvl",   solved action 495
+"competition_levels/SABlinky.lvl",      solved action 148
+"competition_levels/SABoxBunny.lvl",   error 
+"competition_levels/SABronies.lvl",    can not sovle
+"competition_levels/SADAT.lvl",   can not sovle
+"competition_levels/SADoDo.lvl",   solved action 263
+"competition_levels/SAEvilCorp.lvl", can not sovle
 "competition_levels/SAFooBar.lvl",
 "competition_levels/SAGeneralAI.lvl",
-"competition_levels/SAgroupname.lvl",  // solved action 3959
+"competition_levels/SAgroupname.lvl",   solved action 3959
 "competition_levels/SAGroupOne.lvl",
-"competition_levels/SAHALnineK.lvl",  // shabi
-"competition_levels/SAHiveMind.lvl",  // solve
-"competition_levels/SAIamGreedy.lvl",  // time out
-"competition_levels/SAJomarki.lvl", // solve  action 72
+"competition_levels/SAHALnineK.lvl",   shabi
+"competition_levels/SAHiveMind.lvl",   solve
+"competition_levels/SAIamGreedy.lvl",   time out
+"competition_levels/SAJomarki.lvl",  solve  action 72
 "competition_levels/SAKalle.lvl",
-"competition_levels/SALemmings.lvl", // solve  action 116
-"competition_levels/SALiquorice.lvl",  // solve  action 99
-"competition_levels/SAMasAiArne.lvl",  // solve  action 614
+"competition_levels/SALemmings.lvl",  solve  action 116
+"competition_levels/SALiquorice.lvl",   solve  action 99
+"competition_levels/SAMasAiArne.lvl",   solve  action 614
 "competition_levels/SAMASters.lvl",
-"competition_levels/SANeverMind.lvl",  // solve
-"competition_levels/SAOmnics.lvl",  // solve
-"competition_levels/SATALK.lvl",  // solve  action 258
-"competition_levels/SAtnrbts.lvl",
+"competition_levels/SANeverMind.lvl",   solve
+"competition_levels/SAOmnics.lvl",   solve
+"competition_levels/SATALK.lvl",   solve  action 258
+"competition_levels/SAtnrbts.lvl"
+
+
+"competition_levels/MAAIoliMAsh.lvl",
+"competition_levels/MABeliebers.lvl",     MAYBE
+"competition_levels/MABlinky.lvl",   solved 
+"competition_levels/MABoxBunny.lvl",  
+"competition_levels/MABronies.lvl",   MAYBE
+"competition_levels/MADAT.lvl",  
+"competition_levels/MADoDo.lvl",   solved
+"competition_levels/MAEvilCorp.lvl", 
+"competition_levels/MAFooBar.lvl",  MAYBE  
+"competition_levels/MAGeneralAI.lvl",
+"competition_levels/MAgroupname.lvl", solved 
+"competition_levels/MAGroupOne.lvl",   ERROR
+"competition_levels/MAHALnineK.lvl", 
+"competition_levels/MAHiveMind.lvl",
+"competition_levels/MAIamGreedy.lvl",  
+"competition_levels/MAJomarki.lvl",  solved
+"competition_levels/MAKalle.lvl",   solved
+"competition_levels/MALemmings.lvl", solved
+"competition_levels/MALiquorice.lvl",  MAYBE
+"competition_levels/MAMasAiArne.lvl",  MAYBE
+"competition_levels/MAMASters.lvl",
+"competition_levels/MANeverMind.lvl", MAYBE 
+"competition_levels/MAOmnics.lvl",  
+"competition_levels/MATALK.lvl",  
+"competition_levels/MAtnrbts.lvl", MAYBE

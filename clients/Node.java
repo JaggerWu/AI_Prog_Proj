@@ -33,12 +33,11 @@ public class Node {
     public  static HashMap<LocationXY, Boolean> wallMap = new HashMap<>();
     /******************************************************/
     public static Agent agent0 = null;
-    public static List<Agent> orignalAgents = new ArrayList<Agent>() ;
     public Agent thisAgent = null;
     public Box thisBox = null;
     public List<Agent> agents = new ArrayList<>();
     public HashMap<LocationXY, Agent> agentByCoordinate = new HashMap<>();
-
+    public static List<Agent> orignalAgents = new ArrayList<Agent>() ;
     public HashMap<LocationXY, Box> boxMapByLocation = new HashMap<>();
     private HashMap<Character, Box> boxMapByID = new HashMap<>();
 
@@ -168,10 +167,10 @@ public class Node {
             }
             return true;
         }else if(SearchClient.agentGoback){
-            //System.err.println("Agent trying to go back.");
+            System.err.println("Agent trying to go back.");
             if(thisAgent.getLocation().getRow() == orignalAgent.getLocation().getRow() 
                     && thisAgent.getLocation().getCol() == orignalAgent.getLocation().getCol() ){
-                //System.err.println("Agent back to orignal location.");
+                System.err.println("Agent back to orignal location.");
                 return true;
             }
         } else {
@@ -184,7 +183,6 @@ public class Node {
         }
         return false;
     }
-
     
     public boolean isClearState(ArrayList<LocationXY> locs){
     	System.err.println("Is clear state : " + thisAgent.getLabel() + " pos " + thisAgent.getLocation());
@@ -197,7 +195,7 @@ public class Node {
     	}
     	return true;
     }
-    
+
     public void setParent(Node parent){
         if(parent == null){
             this.parent = null;
@@ -297,38 +295,6 @@ public class Node {
         }       
     }
 
-    public static void deleteDeadBox(Node currentState){
-    	ArrayList<Box> tempBoxList = new ArrayList<Box>();
-    	for(LocationXY location : currentState.getBoxByLocation().keySet()){
-            Box box = currentState.getBoxByLocation().get(location);
-            boolean isDeadBox = true ;
-            for(Goal goal : Node.goalDistance.keySet()){
-                if(goal.getId() == Character.toLowerCase(box.getId())){
-                    //System.err.println("goal ID is " +goal.getId() + " ; location " + goal.getLocation());
-                    HashMap<LocationXY, Integer> distanceMap = goalDistance.get(goal);
-                    //System.err.println("distance + " + distanceMap.get(box.getLocation()));
-                    if(distanceMap.get(box.getLocation()) != null){
-                        isDeadBox = false;
-                    }
-                }
-            }
-            
-            for(Agent agent : orignalAgents){
-            	if(agent.getColor() == box.getColor()){
-                    isDeadBox = false;
-                }
-            }
-            
-            if(isDeadBox){
-            	tempBoxList.add(box);
-            }
-    	}
-        for(Box box : tempBoxList){
-            boxMapsta.remove(box.getLocation());
-            //initialState.getBoxMapByLocation().remove(box.getLocation());
-            currentState.getBoxByLocation().remove(box.getLocation());
-    	}
-    }
 
     /*
      * Test and show the distance
@@ -354,6 +320,39 @@ public class Node {
         }
         System.err.println();
     } 
+    
+    public static void deleteDeadBox(Node currentState){
+    	ArrayList<Box> tempBoxList = new ArrayList<Box>();
+    	for(LocationXY location : currentState.getBoxByLocation().keySet()){
+            Box box = currentState.getBoxByLocation().get(location);
+            boolean isDeadBox = true ;
+            for(Goal goal : Node.goalDistance.keySet()){
+                if(goal.getId() == Character.toLowerCase(box.getId())){
+                    System.err.println("goal ID is " +goal.getId() + " ; location " + goal.getLocation());
+                    HashMap<LocationXY, Integer> distanceMap = goalDistance.get(goal);
+                    System.err.println("distance + " + distanceMap.get(box.getLocation()));
+                    if(distanceMap.get(box.getLocation()) != null){
+                        isDeadBox = false;
+                    }
+                }
+            }
+            
+            for(Agent agent : orignalAgents){
+            	if(agent.getColor() == box.getColor()){
+            		isDeadBox = false;
+                }
+            }
+            
+            if(isDeadBox){
+            	tempBoxList.add(box);
+            }
+    	}
+        for(Box box : tempBoxList){
+            boxMapsta.remove(box.getLocation());
+            //initialState.getBoxMapByLocation().remove(box.getLocation());
+            currentState.getBoxByLocation().remove(box.getLocation());
+    	}
+    }
 
     public static void setGoalsPriority(){
         priority = new HashMap<Goal, Integer>();
@@ -361,7 +360,7 @@ public class Node {
         goalDistanceCalculationOfAgent0(distanceList); // calculating distances of each goal to the Agent0
 
         Collections.sort(distanceList);//From the smallest distance to the largest distance
-        //System.err.println("Distance : " + distanceList);
+        System.err.println("Distance : " + distanceList);
 
         intializeEachGoalPriority(distanceList);//according to the distance, set each goal's priority 
 
@@ -377,10 +376,11 @@ public class Node {
                     Entry<Goal, Integer> enrtyPriority = iterPriority.next();
                     if(Objects.equals(enrtyPriority.getValue(), distanceList.get(i))){
                         Goal goal = enrtyPriority.getKey();
-                        //System.err.println("Goal " + goal.getId() + "\'s intially priority is : " + goal.getPriority());
-                        HashMap<LocationXY, Boolean> wallsTemp = (HashMap<LocationXY, Boolean>) Node.wallMapsta.clone();
+                        System.err.println("Goal " + goal.getId() + "\'s intially priority is : " + goal.getPriority());
+                        @SuppressWarnings("unchecked")
+						HashMap<LocationXY, Boolean> wallsTemp = (HashMap<LocationXY, Boolean>) Node.wallMapsta.clone();
                         wallsTemp.put(goal.getLocation(), true);
-                        //System.err.println("Now the goal " + goal.getId() + " is assumed as wall !");
+                        System.err.println("Now the goal " + goal.getId() + " is assumed as wall !");
                         /*
                          * Calculating all distances from agent0 to other goals
                          */
@@ -409,7 +409,7 @@ public class Node {
 
                                         if(!isGoalExist){
                                             isConflictExists = true;
-                                            //System.err.println("ATTENTION : The goal " + enrtyPriority1.getKey().getId() + " has been blocked!");
+                                            System.err.println("ATTENTION : The goal " + enrtyPriority1.getKey().getId() + " has been blocked!");
 
                                             /*
                                              * swift the priority of two goals
@@ -432,29 +432,29 @@ public class Node {
                                 }
                             }
                         }
-                        //System.err.println("Goal " + goal.getId() + "\'s finally priority is : " + goal.getPriority());
+                        System.err.println("Goal " + goal.getId() + "\'s finally priority is : " + goal.getPriority());
 
                     }
                 }
             }
         }
 
-        /*
-         * print goals' priority
-         * */
-        /*
+            /*
+             * print goals' priority
+             * */
         System.err.println();
         for(int i=0; i<distanceList.size(); i++){
-            if(i==0 || !Objects.equals(distanceList.get(i), distanceList.get(i-1)) ){
-                Iterator<HashMap.Entry<Goal, Integer>> iterPriority = priority.entrySet().iterator();
-                while(iterPriority.hasNext()){
-                    Entry<Goal, Integer> enrtyPriority = iterPriority.next();
-                    if(Objects.equals(enrtyPriority.getValue(), distanceList.get(i))){
-                            System.err.println("Goal " + enrtyPriority.getKey().getId() + "\'s final priority " + enrtyPriority.getKey().getPriority());
-                    }
+                if(i==0 || !Objects.equals(distanceList.get(i), distanceList.get(i-1)) ){
+                        Iterator<HashMap.Entry<Goal, Integer>> iterPriority = priority.entrySet().iterator();
+                        while(iterPriority.hasNext()){
+                                Entry<Goal, Integer> enrtyPriority = iterPriority.next();
+                                if(Objects.equals(enrtyPriority.getValue(), distanceList.get(i))){
+                                        System.err.println("Goal " + enrtyPriority.getKey().getId() + "\'s final priority " + enrtyPriority.getKey().getPriority());
+                                }
+                        }
                 }
-            }
-        }*/
+        }
+
     }
 
     private static void distanceMatrix(HashMap<LocationXY, Boolean> wallsTemp,
@@ -512,7 +512,7 @@ public class Node {
                         //enrtyPriority.getKey().setPriority(distanceList.size()+ tempCount - i);//set priority as the index of the distance list in reverse order
                         enrtyPriority.getKey().setPriority(distanceList.get(i)*10+ tempCount);//set priority as the index of the distance list in reverse order
                         tempCount ++ ;
-                        //System.err.println("Goal " + enrtyPriority.getKey().getId() + "\'s priority " + enrtyPriority.getKey().getPriority());
+                        System.err.println("Goal " + enrtyPriority.getKey().getId() + "\'s priority " + enrtyPriority.getKey().getPriority());
                     }
                 }
             }
@@ -534,7 +534,7 @@ public class Node {
                                 && agent0.getLocation().getCol() == coor.getCol()){
                     priority.put(goal, distance);
                     distanceList.add(distance);
-                    //System.err.println("Distance from goal to Agent 0 : Goal -> " + goal.getId() + " , distance -> " + distance);
+                    System.err.println("Distance from goal to Agent 0 : Goal -> " + goal.getId() + " , distance -> " + distance);
                 }
             }
         }
@@ -580,20 +580,20 @@ public class Node {
                 }
                 //Goal priority is initialized as 0 so if it is higher we can assume that the priority has already been set.
                 if(target.getPriority() < 1) {
-                    //If priority has not been set, call this function recursively for the adjacent goal cell and add 1.
-                    int targetPrio = setSingleGoalPriority(target);
-                    if(targetPrio < goal.getPriority() || goal.getPriority() < 1) {
-                        goal.setPriority(targetPrio + 1 + bufferZoneOffset);
-                    }
+                        //If priority has not been set, call this function recursively for the adjacent goal cell and add 1.
+                        int targetPrio = setSingleGoalPriority(target);
+                        if(targetPrio < goal.getPriority() || goal.getPriority() < 1) {
+                                goal.setPriority(targetPrio + 1 + bufferZoneOffset);
+                        }
                 } else {
-                    //else just get the priority and add 1
-                    int targetPrio = target.getPriority();
-                    if(targetPrio < goal.getPriority() || goal.getPriority() < 1) {
-                        goal.setPriority(targetPrio + 1 + bufferZoneOffset);
-                    }
+                        //else just get the priority and add 1
+                        int targetPrio = target.getPriority();
+                        if(targetPrio < goal.getPriority() || goal.getPriority() < 1) {
+                                goal.setPriority(targetPrio + 1 + bufferZoneOffset);
+                        }
                 }
-            //Compare the priority to the priorities found in other directions. Note that a wall will not be able to set the returnVal.
-            returnVal = goal.getPriority() < returnVal ? goal.getPriority() : returnVal;
+                //Compare the priority to the priorities found in other directions. Note that a wall will not be able to set the returnVal.
+                returnVal = goal.getPriority() < returnVal ? goal.getPriority() : returnVal;
             }
         }
         return returnVal;
@@ -617,6 +617,7 @@ public class Node {
                         n.agentMap.put(n.thisAgent.getLocation(), n.thisAgent);
                         n.agentbyID.remove(this.thisAgent.getLabel());
                         n.agentbyID.put(n.thisAgent.getLabel(), n.thisAgent);
+                        //agents.get(index)
                         expandedNodes.add(n);
                     }   break;
                 case Push:
@@ -640,6 +641,7 @@ public class Node {
                             n.boxMapByLocation.remove(new LocationXY(newAgentRow, newAgentCol));
                             n.boxMapByID.remove(boxToMoveCopy.getId());
                             n.boxMapByID.put(boxToMoveCopy.getId(), boxToMoveCopy);
+                            n.thisBox = boxToMoveCopy;
                             n.agentMap.remove(this.thisAgent.getLocation());
                             n.agentMap.put(n.thisAgent.getLocation(), n.thisAgent);
                             n.agentbyID.remove(this.thisAgent.getLabel());
@@ -678,8 +680,7 @@ public class Node {
                             n.boxMapByLocation.remove(new LocationXY(boxRow, boxCol));
                             n.boxMapByID.remove(boxToMoveCopy.getId());
                             n.boxMapByID.put(boxToMoveCopy.getId(), boxToMoveCopy);
-                            n.thisAgent.getLocation().setRow(newAgentRow);
-                            n.thisAgent.getLocation().setCol(newAgentCol);
+                            n.thisBox = boxToMoveCopy;
                             n.thisAgent.getLocation().setRow(newAgentRow);
                             n.thisAgent.getLocation().setCol(newAgentCol);
                             n.agentMap.remove(this.thisAgent.getLocation());
@@ -691,8 +692,7 @@ public class Node {
                             }
                             expandedNodes.add(n);
                         }
-                    }   
-                    break;
+                    }   break;
                 default:
                     break;
             }
@@ -716,13 +716,13 @@ public class Node {
                     case Pull:
                         int boxRow = activeAgent.getLocation().getRow() + Command.dirToRowChange(commands[i].dir2);
                         int boxCol = activeAgent.getLocation().getCol() + Command.dirToColChange(commands[i].dir2);
-                        //System.err.println("Agent: " + activeAgent.getColor());
-                        //System.err.println("Box: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor());
-                        //System.err.println("Equal: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor().equals(activeAgent.getColor()));
+                        System.err.println("Agent: " + activeAgent.getColor());
+                        System.err.println("Box: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor());
+                        System.err.println("Equal: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor().equals(activeAgent.getColor()));
                         if (boxAt(boxRow, boxCol) && boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor() == null || boxAt(boxRow, boxCol) && boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor().equals(activeAgent.getColor())) {
-                            //System.err.println("Agent: " + activeAgent.getColor());
-                            //System.err.println("Box: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor());
-                            //System.err.println("Equal: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor().equals(activeAgent.getColor()));
+                            System.err.println("Agent: " + activeAgent.getColor());
+                            System.err.println("Box: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor());
+                            System.err.println("Equal: " + boxMapByLocation.get(new LocationXY(boxRow, boxCol)).getColor().equals(activeAgent.getColor()));
                             Box pullBox = this.boxMapByLocation.get(new LocationXY(boxRow, boxCol));
                             Box pullBoxNew = new Box(pullBox.getId(), pullBox.getColor(), activeAgent.getLocation());
                             boxMapByLocation.remove(pullBox.getLocation());
@@ -730,7 +730,7 @@ public class Node {
                             if(activeAgent.getCurrentSubGoal() != null && activeAgent.getCurrentSubGoal().getLocation().equals(pullBoxNew.getLocation()) && !activeAgent.isClearMode()) {
                                
                                 pullBoxNew.setInFinalPosition(true);
-                                //System.err.println("Set Box " + pullBoxNew.getId() + " in final position");
+                                System.err.println("Set Box " + pullBoxNew.getId() + " in final position");
                             }
                             activeAgent.setCoordinate(newPos);
                             boxMapByLocation.put(pullBoxNew.getLocation(), pullBoxNew);
@@ -927,10 +927,12 @@ public class Node {
                 }
             }
         }
+        
+        
         Box box = boxMapByLocation.get(new LocationXY(row, col));
         boolean noBox;
-        if(box == null//){
-                || box.getColor() != null && !box.getColor().equals(thisAgent.getColor())){
+        if(box == null //){
+        		|| box.getColor() != null && !box.getColor().equals(thisAgent.getColor())){
             //System.err.println("box not here");
             noBox = true;
         } else {
@@ -953,6 +955,10 @@ public class Node {
         for (Agent agent : this.agents) {
             copy.agents.add(agent.clone());
         }
+        for (LocationXY key : this.agentMap.keySet()) {
+            copy.agentMap.put(key, this.agentMap.get(key));
+            copy.agentbyID.put(this.agentMap.get(key).getLabel(), this.agentMap.get(key));
+        }
         copy.thisAgent = this.thisAgent.clone();
         if(this.thisBox != null)copy.thisBox = new Box(thisBox.getId(), thisBox.getColor(), thisBox.getLocation(), thisBox.isBoxInFinalPosition());
         return copy;
@@ -962,11 +968,11 @@ public class Node {
             LinkedList<Node> plan = new LinkedList<>();
             Node n = this;
             while (!n.isInitialState()) {
-                    Filewriter.giveittostring(n.action.toString());
+                    //Filewriter.giveittostring(n.action.toString());
                     plan.addFirst(n);
                     n = n.parent;
             }
-            Filewriter.printtotxt();
+            //Filewriter.printtotxt();
             return plan;
     }
 
@@ -1065,12 +1071,16 @@ public class Node {
 
     @Override
     public String toString() {
+    	//System.err.println("Printing plan");
         LocationXY loc = null;
         StringBuilder s = new StringBuilder();
         for (int row = 0; row < MAX_ROW; row++) {
-            if (!this.wallMap.containsKey(new LocationXY(row, 0))) {
-                    break;
-            }
+        	//System.err.println("Going to be broken : " + this.wallMap.get(new LocationXY(row, 0)) + !this.wallMap.containsKey(new LocationXY(row, 0)));
+        	
+            //if (!this.wallMap.containsKey(new LocationXY(row, 0))) {
+            //        System.err.println("Broken");
+            //		break;
+            //}
             for (int col = 0; col < MAX_COL; col++) {
                 //if (this.boxes[row][col] > 0) {
                     //s.append(this.boxes[row][col]);
