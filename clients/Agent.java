@@ -1,6 +1,5 @@
 package clients;
 
-import clients.Heuristic.AStar;
 import clients.Heuristic.WeightedAStar;
 import static clients.SearchClient.search;
 import clients.Strategy.StrategyBestFirst;

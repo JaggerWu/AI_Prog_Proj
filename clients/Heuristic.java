@@ -36,13 +36,24 @@ public abstract class Heuristic implements Comparator<Node> {
             int boxToSubGoalDistance = Integer.MAX_VALUE;
             for(Box box : n.getBoxByLocation().values()){
                 if(!box.isBoxInFinalPosition() && box.getId() == Character.toUpperCase(currentSubGoal.getId())){
-                    HashMap<LocationXY, Integer> goalMap = Node.goalDistance.get(currentSubGoal);
-                    int dist = goalMap.get(box.getLocation());
-                    if(dist < boxToSubGoalDistance){
-                        boxToSubGoalDistance = dist;
-                        targetBox = box; 
-                    }
-                }   
+                    //System.err.println("heuristic current subgoal : " + currentSubGoal.getId() + " ; Location is : " + currentSubGoal.getLocation());
+                    //System.err.println("heuristic current box : " + box.getId() + " ; Location is : " + box.getLocation());
+                    for(Goal goal : Node.goalDistance.keySet()){
+                    	if(goal.getId() == currentSubGoal.getId() 
+                    			&& goal.getLocation().getRow() == currentSubGoal.getLocation().getRow()
+                    			&& goal.getLocation().getCol() == currentSubGoal.getLocation().getCol()){
+                            HashMap<LocationXY, Integer> goalMap = Node.goalDistance.get(currentSubGoal);
+                            if(goalMap.get(box.getLocation()) != null){
+                                int dist = goalMap.get(box.getLocation());
+                                if(dist < boxToSubGoalDistance){
+                                    boxToSubGoalDistance = dist;
+                                    targetBox = box; 
+                                }
+                            }
+                    		
+                    	}
+                    }   
+                } 
             }
             Command command = n.action;
             if(targetBox != null){
@@ -53,7 +64,7 @@ public abstract class Heuristic implements Comparator<Node> {
                     int boxCol = n.thisAgent.getLocation().getCol() + Command.dirToColChange(command.dir2);
 
                     if(!(boxRow == targetBox.getLocation().getRow() && boxCol == targetBox.getLocation().getCol() )){
-                        HeuristicDistance += 4;
+                        HeuristicDistance += 4;//4
                         Box otherBox = n.getBoxByLocation().get(new LocationXY(boxRow, boxCol));
                         if(otherBox != null && otherBox.isBoxInFinalPosition()){
                             HeuristicDistance += 100;//100
@@ -77,7 +88,7 @@ public abstract class Heuristic implements Comparator<Node> {
                 
                 for(Agent a : n.agents){
                     if(a.getLabel() != n.thisAgent.getLabel() && a.getLocation().equals(n.thisAgent.getLocation())){
-                        HeuristicDistance += 20;//20
+                        HeuristicDistance += 20;//20  //50
                     }
                 }
                 Box possibleBox = n.getBoxByLocation().get(n.thisAgent.getLocation());
