@@ -2,208 +2,239 @@ package clients;
 
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.PriorityQueue;
 
-public abstract class Heuristic implements Comparator< Node > {
+public abstract class Heuristic implements Comparator<Node> {
+    
+    public Node initialState;
+    public Heuristic(Node initialState) {
+        // Here's a chance to pre-process the static parts of the level.
+        this.initialState = initialState;
+    }
 
-	public Node initialState;
-	public Heuristic(Node initialState) {
-		this.initialState = initialState;
-	}
+    public int h(Node n) {
+        if(SearchClient.agentGoback) {
+            ////System.err.println("I am -----------------------------------------");
+            return agentHeuristic(n);
+        } else if(n.thisAgent.isClearMode()){
+            return clearModeHeuristic(n);
+        } else {
+            return manhattanSubgoalHeuristic(n);
+            //return manhattanSubgoalHeuristic(n);
+        }
+    }
 
-	public int compare(Node n1, Node n2) {
-		return f(n1) - f(n2);
-	}
-	
-	private int maxManhattanHeuristic(Node n) {
-		
-		int maxH = 0;
-		for (Character itemName : Node.getGoalsByID().keySet()) {
-			Coordinate goalCoordinate = Node.getGoalsByID().get(itemName).getCoordinate();
-			Coordinate boxCoordinate = n.getBoxesByID().get(Character.toUpperCase(itemName)).getCoordinate();
-			int newH = Math.abs(n.agents.get(0).getCoordinate().getRow() - boxCoordinate.getRow()) 
-						+ Math.abs(n.agents.get(0).getCoordinate().getColumn() 
-											- boxCoordinate.getColumn()) - 1
-						+ Math.abs(boxCoordinate.getRow() - goalCoordinate.getRow())
-						+ Math.abs(boxCoordinate.getColumn() - goalCoordinate.getColumn());
-			if (newH > maxH) {
-				maxH = newH;
-			}
-		}
-		
-		return maxH;
-	}
-	
-	@SuppressWarnings("unused")
-	private int sumManhattanHeuristic(Node n) {
-		
-		int sumH = 0;
-		for (Character itemName : Node.getGoalsByID().keySet()) {
-			Coordinate goalCoordinate = Node.getGoalsByID().get(itemName).getCoordinate();
-			Coordinate boxCoordinate = n.getBoxesByID().get(Character.toUpperCase(itemName)).getCoordinate();
-			int newH = Math.abs(n.agents.get(0).getCoordinate().getRow() - boxCoordinate.getRow()) 
-						+ Math.abs(n.agents.get(0).getCoordinate().getColumn() 
-											- boxCoordinate.getColumn()) - 1
-						+ Math.abs(boxCoordinate.getRow() - goalCoordinate.getRow())
-						+ Math.abs(boxCoordinate.getColumn() - goalCoordinate.getColumn());
-			sumH += newH;
-		}
-		
-		return sumH;
-	}
+    public abstract int f(Node n);
 
-	private int sumManhattanExcludeSolvedHeuristic(Node n) {
+    public int manhattanSubgoalHeuristic(Node n){
+        int HeuristicDistance = 0;
+        Goal currentSubGoal = null;
+        //Find current subgoal.
+        currentSubGoal = n.thisAgent.getCurrentSubGoal();
+        if(currentSubGoal != null){
+            Box targetBox = null;
+            // find the closest box to the currenSubGoal which can be solved by this Agent.
+            int boxToSubGoalDistance = Integer.MAX_VALUE;
+            for(Box box : n.getBoxByLocation().values()){
+                if(!box.isBoxInFinalPosition() && box.getId() == Character.toUpperCase(currentSubGoal.getId())){
+                    ////System.err.println("heuristic current subgoal : " + currentSubGoal.getId() + " ; Location is : " + currentSubGoal.getLocation());
+                    ////System.err.println("heuristic current box : " + box.getId() + " ; Location is : " + box.getLocation());
+                    for(Goal goal : Node.goalDistance.keySet()){
+                    	if(goal.getId() == currentSubGoal.getId() 
+                    			&& goal.getLocation().getRow() == currentSubGoal.getLocation().getRow()
+                    			&& goal.getLocation().getCol() == currentSubGoal.getLocation().getCol()){
+                            HashMap<LocationXY, Integer> goalMap = Node.goalDistance.get(currentSubGoal);
+                            if(goalMap.get(box.getLocation()) != null){
+                                int dist = goalMap.get(box.getLocation());
+                                if(dist < boxToSubGoalDistance){
+                                    boxToSubGoalDistance = dist;
+                                    targetBox = box; 
+                                }
+                            }
+                    		
+                    	}
+                    }   
+                } 
+            }
+            Command command = n.action;
+            if(targetBox != null){
+                HeuristicDistance =(Math.abs(n.thisAgent.getLocation().getRow() - targetBox.getLocation().getRow()) +
+                            Math.abs(n.thisAgent.getLocation().getCol() - targetBox.getLocation().getCol())) + boxToSubGoalDistance;
+                if(command != null && !(command.actionType == Command.Type.Move)){
+                    int boxRow = n.thisAgent.getLocation().getRow() + Command.dirToRowChange(command.dir2);
+                    int boxCol = n.thisAgent.getLocation().getCol() + Command.dirToColChange(command.dir2);
 
-		System.err.print((n.action != null ? n.action.toActionString() : "") + " :: ");
-		int sumH = 0;
-		for (Coordinate goalCoordinate : Node.getGoalsByCoordinate().keySet()) {
-			Character itemName = Node.getGoalsByCoordinate().get(goalCoordinate).getLetter();
-			Coordinate boxCoordinate = goalCoordinate;// = n.getBoxesByID().get(Character.toUpperCase(itemName)).getCoordinate();
-			for(Box box : n.getBoxesByCoordinate().values()){
-				if(box.getLetter() == Character.toUpperCase(itemName) && !Node.isBoxInTargetGoalCell(box)){
-					boxCoordinate = box.getCoordinate();
-					break;
-				}
-			}
-			System.err.print(goalCoordinate.toString() + " / " + boxCoordinate.toString() + " ;; ");
-			// this currently assumes only one agent
-			if (!goalCoordinate.equals(boxCoordinate)) {
-				int newH = Math.abs(n.agents.get(0).getCoordinate().getRow() - boxCoordinate.getRow())
-						+ Math.abs(n.agents.get(0).getCoordinate().getColumn()
-						- boxCoordinate.getColumn()) - 1
-						+ Math.abs(boxCoordinate.getRow() - goalCoordinate.getRow())
-						+ Math.abs(boxCoordinate.getColumn() - goalCoordinate.getColumn());
-				sumH += newH + 1000;
-			}
-		}
-		System.err.println("  " + sumH);
-		return sumH;
-	}
+                    if(!(boxRow == targetBox.getLocation().getRow() && boxCol == targetBox.getLocation().getCol() )){
+                        HeuristicDistance += 4;//4
+                        Box otherBox = n.getBoxByLocation().get(new LocationXY(boxRow, boxCol));
+                        if(otherBox != null && otherBox.isBoxInFinalPosition()){
+                            HeuristicDistance += 100;//100
+                        }
+                    }
+                }
+                if(command != null && (command.actionType == Command.Type.Pull)){
+                    int AgentRow = n.thisAgent.getLocation().getRow();
+                    int AgentCol = n.thisAgent.getLocation().getCol();
+                    
+                    int targetBoxNeighbouberRow = targetBox.getLocation().getRow();
+                    int targetBoxNeighbouberCol = targetBox.getLocation().getCol();
+                    if( !((Node.wallMap.containsKey(new LocationXY(targetBoxNeighbouberRow-1, targetBoxNeighbouberCol))) && (Node.wallMap.containsKey(new LocationXY(targetBoxNeighbouberRow+1, targetBoxNeighbouberCol)))) && Node.wallMap.containsKey(new LocationXY(AgentRow-1, AgentCol)) && Node.wallMap.containsKey(new LocationXY(AgentRow+1, AgentCol))){
+                        HeuristicDistance += 5;
+                    }
+                
+                    if( !((Node.wallMap.containsKey(new LocationXY(targetBoxNeighbouberRow, targetBoxNeighbouberCol-1))) && (Node.wallMap.containsKey(new LocationXY(targetBoxNeighbouberRow, targetBoxNeighbouberCol+1)))) && Node.wallMap.containsKey(new LocationXY(AgentRow, AgentCol-1)) && Node.wallMap.containsKey(new LocationXY(AgentRow, AgentCol+1))){
+                        HeuristicDistance += 5;
+                    }
+                }
+                
+                for(Agent a : n.agents){
+                    if(a.getLabel() != n.thisAgent.getLabel() && a.getLocation().equals(n.thisAgent.getLocation())){
+                        HeuristicDistance += 20;//20  //50
+                    }
+                }
+                Box possibleBox = n.getBoxByLocation().get(n.thisAgent.getLocation());
+                if(possibleBox != null){
+                    HeuristicDistance += 20;//20
+                    if(possibleBox.isBoxInFinalPosition()){
+                        HeuristicDistance += 200;//200
+                    }
+                }
+                
+            } else {
+                if(!n.isGoalState()) {
+                    //System.err.println("Heuristics: No free box can be used to solve current sub goal.");
+                }
+            }
+        } else {
+            //System.err.println("Heuristics: No goal found.");
+        }
+        ////System.err.println("HeuristicDistance:  " + HeuristicDistance);
+        return HeuristicDistance;
+    }
+    
+    public int agentHeuristic(Node n){
+       // //System.err.println("This is agent heuristic ??????");
+        int heuristicDistance = 0;
+        Agent orginalAgent = null ;
+        for(Agent agent : Node.orignalAgents){
+            if(agent.getLabel() == n.thisAgent.getLabel()){
+                orginalAgent = agent;
+            }
+        }
+       // //System.err.println("This is thisAgent " + n.thisAgent.getLocation());
+       // //System.err.println("This is orignalAgent " + orginalAgent.getLocation());
+        heuristicDistance =Math.abs(n.thisAgent.getLocation().getRow() - orginalAgent.getLocation().getRow()) +
+                            Math.abs(n.thisAgent.getLocation().getCol() - orginalAgent.getLocation().getCol());
+        Command command = n.action;
+        if(command != null && !(command.actionType == Command.Type.Move)){
+            heuristicDistance += 10;
+        }
+       // //System.err.println("heuristicDistance = " + heuristicDistance);
+        return heuristicDistance;
+    }
+    
+    public int clearModeHeuristic(Node n){
+        int HeuristicDistance = 1;
+        boolean notTargetBox = true;
+        for(LocationXY location : n.thisAgent.getClearCords()){
+            Box box = n.getBoxByLocation().get(location);
+            if(box != null && box.getColor() != null && !box.getColor().equals(n.thisAgent.getColor())){
+                HeuristicDistance += 20;
+                HeuristicDistance += Math.abs(n.thisAgent.getLocation().getRow() - box.getLocation().getRow()) +
+                                        Math.abs(n.thisAgent.getLocation().getCol() - box.getLocation().getCol());
+                Command comand = n.action;
+                if(comand != null && !(comand.actionType == Command.Type.Move)){
+                    //if the agent is moving boxes that is not the target box, the heuristic is worsened.
+                    int boxRow = n.thisAgent.getLocation().getRow() + Command.dirToRowChange(comand.dir2);
+                    int boxCol = n.thisAgent.getLocation().getCol() + Command.dirToColChange(comand.dir2);
+                    if((boxRow == box.getLocation().getRow() && boxCol == box.getLocation().getCol() )){
+                        notTargetBox = false;
+                    }
+                }
+            }
+            if(location.equals(n.thisAgent.getLocation())){
+                    HeuristicDistance += 10;
+            }
+            if(notTargetBox){
+                HeuristicDistance += 20;
+            }
+        }
+        Box possibleBox = n.getBoxByLocation().get(n.thisAgent.getLocation());
+        if(possibleBox != null){
+            HeuristicDistance += 4;
+        }
+        for(Agent a : n.agents){
+            if(a.getLabel() != n.thisAgent.getLabel() && a.getLocation().equals(n.thisAgent.getLocation())){
+                HeuristicDistance += 2;
+            }
+        }
+        Command com2 = n.action;
+        if(com2 != null && com2.actionType != Command.Type.Move){
+            int boxRow = n.thisAgent.getLocation().getRow() + Command.dirToRowChange(com2.dir2);
+            int boxCol = n.thisAgent.getLocation().getCol() + Command.dirToColChange(com2.dir2);
+            possibleBox = n.getBoxByLocation().get(new LocationXY(boxRow, boxCol));
+            if(possibleBox != null){
+                HeuristicDistance += 4;
+                if(possibleBox.isBoxInFinalPosition()){
+                    HeuristicDistance += 50;
+                }
+            }
+        }
+        return HeuristicDistance;
+    }
 
+    @Override
+    public int compare(Node n1, Node n2) {
+        return this.f(n1) - this.f(n2);
+    }
 
-	private int manhattanSubgoalHeuristic(Node n){
-		int ret = 0;
-		Goal currentSubGoal = null;
-		//Find current main subgoal.
-		currentSubGoal = n.thisAgent.getCurrentSubGoal();
+    public static class AStar extends Heuristic {
+        public AStar(Node initialState) {
+            super(initialState);
+        }
 
-		if(currentSubGoal != null){
-			//find closest box that can be used to solve
-			int boxDistance = Integer.MAX_VALUE;
-			Box targetBox = null;
-			for(Box box : n.getBoxesByCoordinate().values()){
-				if(!box.isInFinalPosition() && box.getLetter() == Character.toUpperCase(currentSubGoal.getLetter())){
-					HashMap<Coordinate, Integer> goalMap = Node.goalDistance.get(currentSubGoal);
-					int dist = goalMap.get(box.getCoordinate());
-					if(dist < boxDistance){
-						targetBox = box;
-						boxDistance = dist;
-					}
-				}
-			}
-			Command com = n.action;
-			if(targetBox != null){
-				//calculate heuristic. There is extra weight in moving the box closer to its goal.
-				ret = (10 * boxDistance) + Math.abs(n.thisAgent.getCoordinate().getRow() - targetBox.getCoordinate().getRow()) +
-						Math.abs(n.thisAgent.getCoordinate().getColumn() - targetBox.getCoordinate().getColumn());
-				if(com != null && !(com.actType == Command.type.Move)){
+        @Override
+        public int f(Node n) {
+            return n.g() + this.h(n);
+        }
 
-					//if the agent is moving boxes that is not the target box, the heuristic is worsened.
-					int boxRow = n.thisAgent.getCoordinate().getRow() + n.dirToRowChange(com.dir2);
-					int boxCol = n.thisAgent.getCoordinate().getColumn() + n.dirToColChange(com.dir2);
-					if(!(boxRow == targetBox.getCoordinate().getRow() && boxCol == targetBox.getCoordinate().getColumn() )){
-						ret += 30;
-						Box otherBox = n.getBoxesByCoordinate().get(new Coordinate(boxRow, boxCol));
-						if(otherBox != null && otherBox.isInFinalPosition()){
-							ret += 1000;
-						}
-					}
-				}
-				Box possibleBox = n.getBoxesByCoordinate().get(n.thisAgent.getCoordinate());
-				if(possibleBox != null){
-					ret += 200;
-					if(possibleBox.isInFinalPosition()){
-						ret += 2000;
-					}
-				}
-				for(Agent a : n.agents){
-					if(a.getId() != n.thisAgent.getId() && a.getCoordinate().equals(n.thisAgent.getCoordinate())){
-						ret += 200;
-					}
-				}
+        @Override
+        public String toString() {
+            return "A* evaluation";
+        }
+    }
 
-			} else {
-				if(!n.isGoalState()) {
-					System.err.println("Error calculating heuristics: No free box to solve current main sub-goal");
-				}
-			}
-		} else {
-			System.err.println("Error calculating heuristics: No goal is current main sub-goal");
-		}
-		return ret;
-	}
+    public static class WeightedAStar extends Heuristic {
+        private int W;
 
-	public int clearModeHeuristic(Node n){
-		int ret = 1;
-		boolean wrongBox = true;
-		for(Coordinate cord : n.thisAgent.getClearCords()){
-			Box box = n.getBoxesByCoordinate().get(cord);
-			if(box != null && box.getColor() != null && !box.getColor().equals(n.thisAgent.getColor())){
-				ret += 20;
-				ret += Math.abs(n.thisAgent.getCoordinate().getRow() - box.getCoordinate().getRow()) +
-						Math.abs(n.thisAgent.getCoordinate().getColumn() - box.getCoordinate().getColumn());
-				Command com = n.action;
-				if(com != null && !(com.actType == Command.type.Move)){
-					//if the agent is moving boxes that is not the target box, the heuristic is worsened.
-					int boxRow = n.thisAgent.getCoordinate().getRow() + n.dirToRowChange(com.dir2);
-					int boxCol = n.thisAgent.getCoordinate().getColumn() + n.dirToColChange(com.dir2);
-					if((boxRow == box.getCoordinate().getRow() && boxCol == box.getCoordinate().getColumn() )){
-						wrongBox = false;
-					}
-				}
-			}
-			if(cord.equals(n.thisAgent.getCoordinate())){
-				ret += 100;
-			}
-			if(wrongBox){
-				ret += 200;
-			}
-		}
-		Box possibleBox = n.getBoxesByCoordinate().get(n.thisAgent.getCoordinate());
-		if(possibleBox != null){
-			ret += 40;
-		}
-		for(Agent a : n.agents){
-			if(a.getId() != n.thisAgent.getId() && a.getCoordinate().equals(n.thisAgent.getCoordinate())){
-				ret += 20;
-			}
-		}
-		Command com2 = n.action;
-		if(com2 != null && com2.actType != Command.type.Move){
-			int boxRow = n.thisAgent.getCoordinate().getRow() + n.dirToRowChange(com2.dir2);
-			int boxCol = n.thisAgent.getCoordinate().getColumn() + n.dirToColChange(com2.dir2);
-			possibleBox = n.getBoxesByCoordinate().get(new Coordinate(boxRow, boxCol));
-			if(possibleBox != null){
-				ret += 40;
-				if(possibleBox.isInFinalPosition()){
-					ret += 500;
-				}
+        public WeightedAStar(Node initialState, int W) {
+                super(initialState);
+                this.W = W;
+        }
 
-			}
-		}
+        @Override
+        public int f(Node n) {
+                return n.g() + this.W * this.h(n);
+        }
 
-		return ret;
-	}
+        @Override
+        public String toString() {
+                return String.format("WA*(%d) evaluation", this.W);
+        }
+    }
 
+    public static class Greedy extends Heuristic {
+        public Greedy(Node initialState) {
+                super(initialState);
+        }
 
-	public int h(Node n) {
-		if(!n.thisAgent.isClearMode()) {
-			return manhattanSubgoalHeuristic(n);
-		} else {
-			return clearModeHeuristic(n);
-		}
-	}
+        @Override
+        public int f(Node n) {
+                return this.h(n);
+        }
 
-	public abstract int f(Node n);
-
+        @Override
+        public String toString() {
+                return "Greedy evaluation";
+        }
+    }
 }

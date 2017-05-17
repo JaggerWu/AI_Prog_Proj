@@ -1,1 +1,0 @@
-[Move(W)][Move(W)][Move(W)][Move(W)][Move(W)][Move(W)][Move(W)][Move(W)][Push(W,S)][Push(S,E)][Push(E,E)][Push(E,E)][Push(E,E)][Push(E,E)][Push(E,E)][Push(E,E)][Push(E,E)][Push(E,E)][Push(E,E)][Push(E,E)][Push(E,E)][Push(E,S)][Push(S,E)][Push(E,E)][Push(E,E)][Push(E,S)][Push(S,S)]null

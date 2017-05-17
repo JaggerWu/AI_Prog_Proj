@@ -1,30 +1,56 @@
 package clients;
 
+/**
+ * Created by ilma on 26/03/2017.
+ */
 public class Box {
-    private char letter;
+    private char id;
     private String color;
-    private Coordinate coordinate;
-    private boolean inFinalPosition = false;
-
-    public Box(char letter, String color, Coordinate coordinate) {
-        this.letter = letter;
+    private LocationXY location;
+    /************************************************/
+    private boolean isInFinalPosition = false;
+    /************************************************/
+    public Box(char id, String color, LocationXY location) {
+        this.id = id;
         this.color = color;
-        this.coordinate = coordinate;
+        this.location = location;
     }
-
-    public Box(char letter, String color, Coordinate coordinate, boolean inFinalPosition) {
-        this.letter = letter;
+    /*************************/
+    public Box(char id, String color, LocationXY location, boolean isInFinalPosition) {
+        this.id = id;
         this.color = color;
-        this.coordinate = coordinate;
-        this.inFinalPosition = inFinalPosition;
+        this.location = location;
+        this.isInFinalPosition = isInFinalPosition;
+    }
+    /******************************/
+    
+    public Box(){
+    	this.location = new LocationXY();
+    }
+    
+    public Box(char letter, String color, int trow, int tcol){
+    	this.id = letter;
+    	this.color = color;
+    	this.location = new LocationXY(trow, tcol);
+    }
+    
+    public Box(int trow, int tcol, char letter){
+    	this.id = letter;
+    	this.location = new LocationXY(trow, tcol);
     }
 
-    public char getLetter() {
-        return letter;
+    public Box(String tcol, LocationXY loc, char letter) {
+        this.id = letter;
+        this.location = loc;
+        this.color = tcol;
     }
 
-    public void setLetter(char letter) {
-        this.letter = letter;
+    public char getId() {
+        return id;
+    }
+
+    public void setId(char id) {
+        this.id = id;
     }
 
     public String getColor() {
@@ -34,43 +60,23 @@ public class Box {
     public void setColor(String color) {
         this.color = color;
     }
+
+    public LocationXY getLocation() {
+        return location;
+    }
+
+    public void setLocation(LocationXY location) {
+        this.location = location;
+    }
+    /**
+     * @return *************************************************/
+    public boolean isBoxInFinalPosition() {
+        return isInFinalPosition;
+    }
     
-    public Coordinate getCoordinate() {
-        return coordinate;
+    public void setInFinalPosition(boolean isInFinalPosition) {
+        this.isInFinalPosition = isInFinalPosition;
     }
+    /*****************************************************/
 
-    public void setCoordinate(Coordinate coordinate) {
-        this.coordinate = coordinate;
-    }
-
-    public boolean isInFinalPosition() {
-        return inFinalPosition;
-    }
-
-    public void setInFinalPosition(boolean inFinalPosition) {
-        this.inFinalPosition = inFinalPosition;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Box box = (Box) o;
-
-        if (letter != box.letter) return false;
-        if (inFinalPosition != box.inFinalPosition) return false;
-        if (color != null ? !color.equals(box.color) : box.color != null) return false;
-        return coordinate.equals(box.coordinate);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) letter;
-        result = 31 * result + (color != null ? color.hashCode() : 0);
-        result = 31 * result + coordinate.hashCode();
-        result = 31 * result + (inFinalPosition ? 1 : 0);
-        return result;
-    }
 }

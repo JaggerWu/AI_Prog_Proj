@@ -3,71 +3,88 @@ package clients;
 import java.util.LinkedList;
 
 public class Command {
-	static {
-		LinkedList< Command > cmds = new LinkedList< Command >();
-		for (dir d : dir.values()) {
-			cmds.add(new Command(d));
-		}
+    // Order of enum important for determining opposites.
+    public static enum Dir {
+        N, W, E, S
+    };
 
-		for (dir d1 : dir.values()) {
-			for (dir d2 : dir.values()) {
-				if (!Command.isOpposite(d1, d2)) {
-					cmds.add(new Command(type.Push, d1, d2));
-				}
-			}
-		}
-		for (dir d1 : dir.values()) {
-			for (dir d2 : dir.values()) {
-				if (d1 != d2) {
-					cmds.add(new Command(type.Pull, d1, d2));
-				}
-			}
-		}
+    public static enum Type {
+        Move, Push, Pull
+    };
 
-		every = cmds.toArray(new Command[0]);
-	}
+    public static final Command[] EVERY;
+    static {
+        LinkedList<Command> cmds = new LinkedList<Command>();
+        for (Dir d1 : Dir.values()) {
+            for (Dir d2 : Dir.values()) {
+                if (!Command.isOpposite(d1, d2)) {
+                    cmds.add(new Command(Type.Push, d1, d2));
+                }
+            }
+        }
+        for (Dir d1 : Dir.values()) {
+            for (Dir d2 : Dir.values()) {
+                if (d1 != d2) {
+                    cmds.add(new Command(Type.Pull, d1, d2));
+                }
+            }
+        }
+        for (Dir d : Dir.values()) {
+            cmds.add(new Command(d));
+        }
 
-	public final static Command[] every;
+        EVERY = cmds.toArray(new Command[0]);
+    }
 
-	private static boolean isOpposite(dir d1, dir d2) {
-		return d1.ordinal() + d2.ordinal() == 3;
-	}
+    public static boolean isOpposite(Dir d1, Dir d2) {
+        return d1.ordinal() + d2.ordinal() == 3;
+    }
 
-	// Order of enum important for determining opposites
-	public static enum dir {
-		N, W, E, S
-	};
-	
-	public static enum type {
-		Move, Push, Pull
-	};
+    public static int dirToRowChange(Dir d) {
+        // South is down one row (1), north is up one row (-1).
+        switch (d) {
+        case S:
+                return 1;
+        case N:
+                return -1;
+        default:
+                return 0;
+        }
+    }
 
-	public final type actType;
-	public final dir dir1;
-	public final dir dir2;
+    public static int dirToColChange(Dir d) {
+        // East is right one column (1), west is left one column (-1).
+        switch (d) {
+        case E:
+                return 1;
+        case W:
+                return -1;
+        default:
+                return 0;
+        } 
+    }
 
-	public Command(dir d) {
-		actType = type.Move;
-		dir1 = d;
-		dir2 = null;
-	}
+    public final Type actionType;
+    public final Dir dir1;
+    public final Dir dir2;
 
-	public Command(type t, dir d1, dir d2) {
-		actType = t;
-		dir1 = d1;
-		dir2 = d2;
-	}
+    public Command(Dir d) {
+        this.actionType = Type.Move;
+        this.dir1 = d;
+        this.dir2 = null;
+    }
 
-	public String toString() {
-		if (actType == type.Move)
-			return actType.toString() + "(" + dir1 + ")";
+    public Command(Type t, Dir d1, Dir d2) {
+        this.actionType = t;
+        this.dir1 = d1;
+        this.dir2 = d2;
+    }
 
-		return actType.toString() + "(" + dir1 + "," + dir2 + ")";
-	}
-	
-
-	public String toActionString() {
-		return "[" + this.toString() + "]";
-	}
-
+    @Override
+    public String toString() {
+        if (this.actionType == Type.Move)
+            return String.format("%s(%s)", this.actionType.toString(), this.dir1.toString());
+        else
+            return String.format("%s(%s,%s)", this.actionType.toString(), this.dir1.toString(), this.dir2.toString());
+    }
 }
