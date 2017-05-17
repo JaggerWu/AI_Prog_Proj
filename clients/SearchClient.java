@@ -47,7 +47,7 @@ public class SearchClient {
     PriorityQueue<Goal> goalqueue;
     public SearchClient() throws Exception {
         loadMap();
-        //System.err.println("Box number: " + this.initialState.boxMap.size());
+        ////("Box number: " + this.initialState.boxMap.size());
         Node.computeGoalDistance();
         Node.deleteDeadBox(currentState);
         //Node.showDistance();
@@ -65,17 +65,17 @@ public class SearchClient {
     public void multipleAgent() throws IOException{
         goalqueue = new PriorityQueue<Goal>(subGoals);
         while(!goalqueue.isEmpty()){
-            System.err.println("subgoals");
-            System.err.println(goalqueue.peek().getId());
+            //("subgoals");
+            //(goalqueue.peek().getId());
             Stack<SubPlan> substack = new Stack<SubPlan>();
             Agent currentagent = null;
             Goal currentgoal = goalqueue.peek();
-            System.err.println("forwaimian");
-            System.err.println(agents.size());
+            //("forwaimian");
+            //(agents.size());
             for(int i = 0; i < agents.size(); i ++){
-                System.err.println("forlimian");
-                System.err.println("a: " + agents.get(i).getColor());
-                System.err.println("goal: " + this.colorSet.get(Character.toUpperCase(currentgoal.getId())));
+                //("forlimian");
+                //("a: " + agents.get(i).getColor());
+                //("goal: " + this.colorSet.get(Character.toUpperCase(currentgoal.getId())));
                 if(agents.get(i).getColor() == "blue" || agents.get(i).getColor() == this.colorSet.get(Character.toUpperCase(currentgoal.getId())) ){
                     for(Goal goal : Node.goalDistance.keySet() ){
                             if(goal.getId() == currentgoal.getId() 
@@ -85,9 +85,9 @@ public class SearchClient {
                                         if(location.getRow() == agents.get(i).getLocation().getRow() 
                                                     && location.getCol() == agents.get(i).getLocation().getCol()){
                                             currentagent = agents.get(i);
-                                            System.err.println("current agent is : " + currentagent.getLabel());
-                                            System.err.println("current agent location is : " + currentagent.getLocation());
-                                            System.err.println("current goal location is : " + goal.getLocation());
+                                            //("current agent is : " + currentagent.getLabel());
+                                            //("current agent location is : " + currentagent.getLocation());
+                                            //("current goal location is : " + goal.getLocation());
                                             agents.get(i).doingcell = currentgoal.getLocation();
                                             agents.get(i).doingthing = currentgoal.getId();
                                             break;
@@ -98,8 +98,6 @@ public class SearchClient {
 
                     }
                 }
-                if(currentagent == null)System.err.println("No agents could solve this goal");	
-
             }
             //System.exit(1);
             //substack.push(currentgoal.getId());
@@ -107,70 +105,70 @@ public class SearchClient {
             Node myinitalState = currentState.getCopy();
 
             while(!substack.isEmpty()){
-                System.err.println("substack");
-                System.err.println(substack.peek().id);
+                //("substack");
+                //(substack.peek().id);
 
-                System.err.println(currentagent.getLabel());
+                //(currentagent.getLabel());
 
                 if(currentagent != null){
-                    System.err.println("currentagent not null");
+                    //("currentagent not null");
                     //currentagent.setClearMode(false);
-                    System.err.println("peek: " + substack.peek().id);
+                    //("peek: " + substack.peek().id);
                     if(substack.peek().id >= 'a' && substack.peek().id <= 'z'){//peek is a goal
-                        System.err.println("Peek is a goal");
+                        //("Peek is a goal");
                         currentagent.currentGoal = currentgoal;
                         myinitalState.thisAgent = currentagent;
 
-                        System.err.println(currentgoal.getId());
-                        System.err.println(currentagent.getLabel());
-                        //System.err.println(x);
-                        //System.err.println(myinitalState.action);
+                        //(currentgoal.getId());
+                        //(currentagent.getLabel());
+                        ////(x);
+                        ////(myinitalState.action);
                         //myinitalState.action = null;
                         currentagent.setStrategy(new StrategyBestFirst(new WeightedAStar(myinitalState,10)));
 
                         LinkedList<Node> plan = search(currentagent.getStrategy(), myinitalState);
 
-                        System.err.println(substack.peek().id);
-                        System.err.println(currentagent.getLabel());
+                        //(substack.peek().id);
+                        //(currentagent.getLabel());
                         if(plan != null){
-                            System.err.println("plan not null");
-                            //System.err.println(plan.getLast());
-                            //System.err.println(plan.getFirst().action);
+                            //("plan not null");
+                            ////(plan.getLast());
+                            ////(plan.getFirst().action);
                             for(int i = 0; i < plan.size(); i ++){
-                                System.err.println(plan.get(i));
-                                System.err.println(plan.get(i).action);
+                                //(plan.get(i));
+                                //(plan.get(i).action);
                             }
                             substack.peek().passcells = nodesToCells(plan);
                             ArrayList<LocationXY> thispasscells = new ArrayList<LocationXY>();
                             thispasscells = substack.peek().passcells;
-                            //System.err.println(myinitalState.agentMap.get(new LocationXY(1,18)).getLabel());
+                            ////(myinitalState.agentMap.get(new LocationXY(1,18)).getLabel());
                             boolean cellsfree = checkclear(substack.peek().passcells, myinitalState);
-                            System.err.println("cell free?" + cellsfree);
+                            //("cell free?" + cellsfree);
                             //boolean cellsfree = true;
-                            System.err.println(myinitalState);
-                            //System.err.println(myinitalState.agentbyID.get('1').getLabel());
+                            //(myinitalState);
+                            ////(myinitalState.agentbyID.get('1').getLabel());
                         if(cellsfree){
-                            System.err.println("cells free");
-                            //System.err.println("First: " + myinitalState.thisAgent.getLabel() );
+                            //("cells free");
+                            ////("First: " + myinitalState.thisAgent.getLabel() );
                             //myinitalState = plan.getLast().getCopy();
-                            //System.err.println("Second: " + myinitalState.thisAgent.getLabel() );
+                            ////("Second: " + myinitalState.thisAgent.getLabel() );
                             //currentagent.appendSolution(plan);
                             for(int i=0; i < agents.size(); i ++){
                                 if(agents.get(i).getLabel() == currentagent.getLabel()){
-                                    System.err.println(agents.get(i).getLabel());
+                                    //(agents.get(i).getLabel());
                                     agents.get(i).appendSolution(plan);
                                     //a.appendSolution(subplan);
                                     //System.exit(1);
                                     break;
                                 }
                             }
-                                //System.err.println(currentagent.getLabel());
-                                //System.err.println(currentagent.getNextAction());
+                                ////(currentagent.getLabel());
+                                ////(currentagent.getNextAction());
 
                             substack.pop();
                             boolean cont = true;
                             while (cont) {
-                                System.err.println("cont");
+                                //("cont");
                                 cont = performActions();
                                 boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
                                 //currentState.printState();
@@ -185,18 +183,18 @@ public class SearchClient {
                             }else{//cells are not free
                                 HashMap<LocationXY, Agent> barrieragents = new HashMap<LocationXY, Agent>();
                                 HashMap<LocationXY, Box> barrierboxes = new HashMap<LocationXY, Box>();
-                                System.err.println("Size : " + substack.peek().passcells.size());
+                                //("Size : " + substack.peek().passcells.size());
                                 SubPlan checking = substack.peek();
                                 for(int i = checking.passcells.size() - 1; i >= 0 ; i -- ){
-                                        System.err.println("int i: " + i);
+                                        //("int i: " + i);
                                     if(myinitalState.agentMap.containsKey(checking.passcells.get(i)) && myinitalState.agentMap.get(checking.passcells.get(i)).getLabel() != myinitalState.thisAgent.getLabel()){
-                                        System.err.println("I'm here agent");
+                                        //("I'm here agent");
                                         barrieragents.put(checking.passcells.get(i), myinitalState.agentMap.get(checking.passcells.get(i)));
                                         substack.push(new SubPlan(checking.passcells.get(i), myinitalState.agentMap.get(checking.passcells.get(i)).getLabel(), thispasscells));
                                     }
-                                    //System.err.println("Size : " + substack.peek().passcells.size());
+                                    ////("Size : " + substack.peek().passcells.size());
                                     if(myinitalState.boxMapByLocation.containsKey(checking.passcells.get(i)) && myinitalState.boxMapByLocation.get(checking.passcells.get(i)).getColor() != myinitalState.thisAgent.getColor()){
-                                        System.err.println("I'm here box");
+                                        //("I'm here box");
                                         barrierboxes.put(checking.passcells.get(i), myinitalState.boxMapByLocation.get(checking.passcells.get(i)));
                                         substack.push(new SubPlan(checking.passcells.get(i), myinitalState.boxMapByLocation.get(checking.passcells.get(i)).getId(), thispasscells));
                                     }
@@ -204,45 +202,45 @@ public class SearchClient {
                             }//cells are not free
 
                         }else{
-                            System.err.println("Sha TM wanyi");
+                            //("Sha TM wanyi");
                             //plan is null
                         }
 
                         }else{//peek is not a goal
                             if(substack.peek().id >= '0' && substack.peek().id <= '9' ){
                                 if(myinitalState.agentMap.get(substack.peek().loc) != null){
-                                    System.err.println("I'm here peek is agent");
+                                    //("I'm here peek is agent");
                                     Agent a = myinitalState.agentMap.get(substack.peek().loc);
-                                    System.err.println("Which agent after peek check? " + a.getLabel());
+                                    //("Which agent after peek check? " + a.getLabel());
                                     a.setClearMode(true);
                                     a.setClearCords(substack.peek().avoidcells);
                                     myinitalState.thisAgent = a;
-                                    System.err.println("Which agent moving? " + myinitalState.thisAgent.getLabel());
+                                    //("Which agent moving? " + myinitalState.thisAgent.getLabel());
                                     a.setStrategy(new StrategyBestFirst(new WeightedAStar(myinitalState,10)));
 
                                     LinkedList<Node> subplan = searchclear(myinitalState.thisAgent.getStrategy(), myinitalState, substack.peek().avoidcells);
 
-                                    //System.err.println(a.getLabel() + "'s action " + a.getNextAction());
-                                    //System.err.println( "0 's action " + myinitalState.agentbyID.get('0').getNextAction());
+                                    ////(a.getLabel() + "'s action " + a.getNextAction());
+                                    ////( "0 's action " + myinitalState.agentbyID.get('0').getNextAction());
                                     //System.exit(1);//Stops here because we've already found the bug
 
                                     //System.exit(1);
                                     if(subplan != null){
-                                            System.err.println("PLANNNNNNNNNNNNN" + subplan.getFirst());
-                                    System.err.println(subplan.getFirst().action);
-                                    System.err.println(subplan.getFirst().thisAgent.getLabel());
+                                            //("PLANNNNNNNNNNNNN" + subplan.getFirst());
+                                    //(subplan.getFirst().action);
+                                    //(subplan.getFirst().thisAgent.getLabel());
                                     substack.peek().passcells = nodesToCells(subplan);
                                     ArrayList<LocationXY> thispasscells = new ArrayList<LocationXY>();
                                     thispasscells = substack.peek().passcells;
                                     boolean cellsfree = checkclear(substack.peek().passcells, myinitalState);
 
                                             if(cellsfree){
-                                    System.err.println("cells free");
-                                    System.err.println(a.getLabel());
+                                    //("cells free");
+                                    //(a.getLabel());
                                     //myinitalState = subplan.getLast().getCopy();
                                     for(int i=0; i < agents.size(); i ++){
                                             if(agents.get(i).getLabel() == a.getLabel()){
-                                                    System.err.println(agents.get(i).getLabel());
+                                                    //(agents.get(i).getLabel());
                                                     agents.get(i).appendSolution(subplan);
                                                     //a.appendSolution(subplan);
                                                     //System.exit(1);
@@ -250,15 +248,15 @@ public class SearchClient {
                                             }
                                     }
                                     //a.appendSolution(subplan);
-                                    //System.err.println(a.getNextAction());//problem
-                                    //System.err.println(subplan);
+                                    ////(a.getNextAction());//problem
+                                    ////(subplan);
                                     //System.exit(1);
 
                                     //myinitalState = subplan.getLast();
                                     substack.pop();
                                     boolean cont = true;
                                     while (cont) {
-                                        System.err.println("cont");
+                                        //("cont");
                                         cont = performActions();
                                         boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
                                         a.setClearMode(false);
@@ -273,18 +271,18 @@ public class SearchClient {
                                 }else{//cells are not free
                                         HashMap<LocationXY, Agent> barrieragents = new HashMap<LocationXY, Agent>();
                                         HashMap<LocationXY, Box> barrierboxes = new HashMap<LocationXY, Box>();
-                                        System.err.println("Size : " + substack.peek().passcells.size());
+                                        //("Size : " + substack.peek().passcells.size());
                                         SubPlan checking = substack.peek();
                                         for(int i = checking.passcells.size() - 1; i >= 0 ; i -- ){
-                                                System.err.println("int i: " + i);
+                                                //("int i: " + i);
                                         if(myinitalState.agentMap.containsKey(checking.passcells.get(i)) && myinitalState.agentMap.get(checking.passcells.get(i)).getLabel() != myinitalState.thisAgent.getLabel()){
-                                                //System.err.println("I'm here agent");
+                                                ////("I'm here agent");
                                                 barrieragents.put(checking.passcells.get(i), myinitalState.agentMap.get(checking.passcells.get(i)));
                                                 substack.push(new SubPlan(checking.passcells.get(i), myinitalState.agentMap.get(checking.passcells.get(i)).getLabel(), thispasscells));
                                         }
-                                        //System.err.println("Size : " + substack.peek().passcells.size());
+                                        ////("Size : " + substack.peek().passcells.size());
                                         if(myinitalState.boxMapByLocation.containsKey(checking.passcells.get(i)) && myinitalState.boxMapByLocation.get(checking.passcells.get(i)).getColor() != myinitalState.thisAgent.getColor()){
-                                                //System.err.println("I'm here box");
+                                                ////("I'm here box");
                                                 barrierboxes.put(checking.passcells.get(i), myinitalState.boxMapByLocation.get(checking.passcells.get(i)));
                                                 substack.push(new SubPlan(checking.passcells.get(i), myinitalState.boxMapByLocation.get(checking.passcells.get(i)).getId(), thispasscells));
                                         }
@@ -300,13 +298,13 @@ public class SearchClient {
                                 substack.pop();
                             }
                         }else if(substack.peek().id >= 'A' && substack.peek().id <= 'Z' ){
-                            System.err.println("I'm here peek is box");
+                            //("I'm here peek is box");
                             Box b = myinitalState.boxMapByLocation.get(substack.peek().loc);
                             Agent a = null;
                             for(int i = 0; i < agents.size(); i ++){
                                 if(b.getColor() == agents.get(i).getColor()){
                                     a = agents.get(i);
-                                    System.err.println("Chosen agent " + a.getLabel() + " for box " + b.getId());
+                                    //("Chosen agent " + a.getLabel() + " for box " + b.getId());
                                     break;
                                 }
                             }
@@ -315,7 +313,7 @@ public class SearchClient {
                                     a.setClearCords(substack.peek().avoidcells);
                                     myinitalState.thisAgent = a;
                                     myinitalState.thisBox = b;
-                                    System.err.println("Which agent moving? " + myinitalState.thisAgent.getLabel());
+                                    //("Which agent moving? " + myinitalState.thisAgent.getLabel());
                                     a.setStrategy(new StrategyBestFirst(new WeightedAStar(myinitalState,10)));
 
                                     LinkedList<Node> subplan = searchclear(myinitalState.thisAgent.getStrategy(), myinitalState, substack.peek().avoidcells);
@@ -327,13 +325,13 @@ public class SearchClient {
                                             boolean cellsfree = checkclear(substack.peek().passcells, myinitalState);
 
                                             if(cellsfree){
-                                                System.err.println("cells free");
-                                                System.err.println(a.getLabel());
-                                                System.err.println(b.getId());
+                                                //("cells free");
+                                                //(a.getLabel());
+                                                //(b.getId());
                                                 //myinitalState = subplan.getLast().getCopy();
                                                 for(int i=0; i < agents.size(); i ++){
                                                         if(agents.get(i).getLabel() == a.getLabel()){
-                                                                System.err.println(agents.get(i).getLabel());
+                                                                //(agents.get(i).getLabel());
                                                                 agents.get(i).appendSolution(subplan);
                                                                 //a.appendSolution(subplan);
                                                                 //System.exit(1);
@@ -341,15 +339,15 @@ public class SearchClient {
                                                         }
                                                 }
                                                 //a.appendSolution(subplan);
-                                                //System.err.println(a.getNextAction());//problem
-                                                //System.err.println(subplan);
+                                                ////(a.getNextAction());//problem
+                                                ////(subplan);
                                                 //System.exit(1);
 
                                                 //myinitalState = subplan.getLast();
                                                 substack.pop();
                                                 boolean cont = true;
                                                 while (cont) {
-                                                    System.err.println("cont");
+                                                    //("cont");
                                                     cont = performActions();
                                                     boolean status = currentState.changeState(latestActionArray, latestServerOutput, this);
                                                     a.setClearMode(false);
@@ -365,18 +363,18 @@ public class SearchClient {
                                             }else{//cells are not free
                                                 HashMap<LocationXY, Agent> barrieragents = new HashMap<LocationXY, Agent>();
                                                 HashMap<LocationXY, Box> barrierboxes = new HashMap<LocationXY, Box>();
-                                                System.err.println("Size : " + substack.peek().passcells.size());
+                                                //("Size : " + substack.peek().passcells.size());
                                                 SubPlan checking = substack.peek();
                                                 for(int i = checking.passcells.size() - 1; i >= 0 ; i -- ){
-                                                    System.err.println("int i: " + i);
+                                                    //("int i: " + i);
                                                     if(myinitalState.agentMap.containsKey(checking.passcells.get(i)) && myinitalState.agentMap.get(checking.passcells.get(i)).getLabel() != myinitalState.thisAgent.getLabel()){
-                                                        //System.err.println("I'm here agent");
+                                                        ////("I'm here agent");
                                                         barrieragents.put(checking.passcells.get(i), myinitalState.agentMap.get(checking.passcells.get(i)));
                                                         substack.push(new SubPlan(checking.passcells.get(i), myinitalState.agentMap.get(checking.passcells.get(i)).getLabel(), thispasscells));
                                                     }
-                                                    //System.err.println("Size : " + substack.peek().passcells.size());
+                                                    ////("Size : " + substack.peek().passcells.size());
                                                     if(myinitalState.boxMapByLocation.containsKey(checking.passcells.get(i)) && myinitalState.boxMapByLocation.get(checking.passcells.get(i)).getColor() != myinitalState.thisAgent.getColor()){
-                                                        //System.err.println("I'm here box");
+                                                        ////("I'm here box");
                                                         barrierboxes.put(checking.passcells.get(i), myinitalState.boxMapByLocation.get(checking.passcells.get(i)));
                                                         substack.push(new SubPlan(checking.passcells.get(i), myinitalState.boxMapByLocation.get(checking.passcells.get(i)).getId(), thispasscells));
                                                     }
@@ -395,9 +393,9 @@ public class SearchClient {
 
     private boolean checkclear(ArrayList<LocationXY> passcells, Node thisState) {
         for(int i = 0; i < passcells.size(); i ++){
-            System.err.println(passcells.get(i));
-            System.err.println(thisState.agentMap.containsKey(passcells.get(i)));
-            //System.err.println(thisState.agentMap.get(passcells.get(i)).getLabel() != thisState.thisAgent.getLabel());
+            //(passcells.get(i));
+            //(thisState.agentMap.containsKey(passcells.get(i)));
+            ////(thisState.agentMap.get(passcells.get(i)).getLabel() != thisState.thisAgent.getLabel());
             if(thisState.agentMap.containsKey(passcells.get(i)) && thisState.agentMap.get(passcells.get(i)).getLabel() != thisState.thisAgent.getLabel()){
                 return false;
             }
@@ -431,12 +429,12 @@ public class SearchClient {
             ArrayList<Integer> order = new ArrayList<>();
             if(agents.size() > 1){
                 for(Goal goal : Node.priority.keySet()){
-                //System.err.println("Goal " + goal.getId()+ "   " + "priority" + goal.getPriority());
+                ////("Goal " + goal.getId()+ "   " + "priority" + goal.getPriority());
                 order.add(goal.getPriority());
                 }
                 Collections.sort(order);
                 Collections.reverse(order);
-                //System.err.println(order);
+                ////(order);
                 for(Integer i : order){
                     for(Goal goal : Node.priority.keySet()){
                         if(goal.getPriority() == i){
@@ -451,12 +449,12 @@ public class SearchClient {
             for (Agent agent : orderedAgents) {
                 agent.tryToFindNextGoal(currentState, subGoals);
                 if(!agent.isQuarantined() && !agent.isDone) {
-                    System.err.println("Agent " + agent.getLabel() + " is trying to find solution for goal " + agent.getCurrentSubGoal().getId());
+                    //("Agent " + agent.getLabel() + " is trying to find solution for goal " + agent.getCurrentSubGoal().getId());
                     Node myinitalState = currentState.getCopy();
                     myinitalState.thisAgent = agent;
                     agent.setStrategy(new StrategyBestFirst(new WeightedAStar(myinitalState,10)));
                     LinkedList<Node> plan = search(agent.getStrategy(), myinitalState);
-                    //System.err.println(plan);
+                    ////(plan);
                     if(plan != null) {
                         agent.appendSolution(plan);
                         boolean cont = true;
@@ -476,12 +474,12 @@ public class SearchClient {
                                 agentErrorState[i] = true;
                                 Agent failAgent = currentState.getAgentById(Integer.toString(i).charAt(0));
                                 if(!currentState.agents.get(i).isQuarantined()) {
-                                    System.err.println("Agent number " + failAgent.getLabel() + " is requesting clear");
+                                    //("Agent number " + failAgent.getLabel() + " is requesting clear");
                                     failAgent.requestClear(currentState);
                                 }
                             } else {
                                 agentErrorState[i] = false;
-                                System.err.println("Agent number " + currentState.agents.get(i).getLabel() + " is done with no error");
+                                //("Agent number " + currentState.agents.get(i).getLabel() + " is done with no error");
                                 for(Agent a : currentState.getAgents()){
                                     if(a.isQuarantined() && a.getQuarantinedBy().getLabel() == currentState.agents.get(i).getLabel()){
                                         a.setQuarantined(false);
@@ -499,7 +497,7 @@ public class SearchClient {
                             }
                         }
                     } else {
-                        System.err.println("Solution could not be found");
+                        //("Solution could not be found");
                     }
                 }
                 //agentRequestBack(agent);     
@@ -609,7 +607,7 @@ public class SearchClient {
                 } else if (chr == ' ') {
                     // Free space.
                 } else {
-                    System.err.println("Error, read invalid level character: " + chr + " " + (int) chr + "at Row" + row + "at Col" + col);
+                    //("Error, read invalid level character: " + chr + " " + (int) chr + "at Row" + row + "at Col" + col);
                     System.exit(1);
                 }
             }
@@ -623,7 +621,7 @@ public class SearchClient {
         myCurrentState1.printState();
         agent.setStrategy(new StrategyBestFirst(new WeightedAStar(myCurrentState1,10)));
         LinkedList<Node> plan1 = search(agent.getStrategy(), myCurrentState1);
-        System.err.println(plan1);
+        //(plan1);
         if(plan1 != null) {
             agent.appendSolution(plan1);
             boolean cont = true;
@@ -637,7 +635,7 @@ public class SearchClient {
                 }
             }
         } else {
-            System.err.println("Solution could not be found");
+            //("Solution could not be found");
         }
        // agent.setAgentBackMode(false);
        SearchClient.agentGoback = false;
@@ -707,7 +705,7 @@ public class SearchClient {
         strategy.addToFrontier(initialState);
         while (true) {
             if (strategy.frontierIsEmpty()) {
-                System.err.println("Agent " + initialState.thisAgent.getLabel() + " says: Frontier is empty");
+                //("Agent " + initialState.thisAgent.getLabel() + " says: Frontier is empty");
                 return null;
             }
             Node leafNode = strategy.getAndRemoveLeaf();
@@ -728,13 +726,13 @@ public class SearchClient {
         strategy.addToFrontier(initialState);
         while (true) {
             if (strategy.frontierIsEmpty()) {
-                System.err.println("Agent " + initialState.thisAgent.getLabel() + " says: Frontier is empty");
+                //("Agent " + initialState.thisAgent.getLabel() + " says: Frontier is empty");
                 return null;
             }
             Node leafNode = strategy.getAndRemoveLeaf();
             if ( leafNode.isClearState(clearlocs) ) {
-                System.err.println("got clear plan");
-                System.err.println(leafNode.thisAgent.getLabel());
+                //("got clear plan");
+                //(leafNode.thisAgent.getLabel());
                 return leafNode.extractPlan();
             }
             strategy.addToExplored(leafNode);
@@ -749,7 +747,7 @@ public class SearchClient {
         int iterations = 0;
         while (true) {
             if (iterations == 1000) {
-                System.err.println(strategy.searchStatus());
+                //(strategy.searchStatus());
                 iterations = 0;
             }
             if (strategy.frontierIsEmpty()) {
@@ -763,10 +761,10 @@ public class SearchClient {
             //System.err.print("agentX : " + leafNode.a.getLocation().getRow() + " ");
             //System.err.print("agentY : " + leafNode.a.getLocation().getY() + " ");
             //System.err.print("HASH : " + leafNode.hashCode() + " ");
-            //System.err.println();
+            ////();
             if (leafNode.isGoalState(plan.withbox)) {
-                //System.err.println("Found goal state");
-                //System.err.println("Box:" + leafNode.b.getId() + " " + leafNode.b.getLocation().getRow() + " " + leafNode.b.getLocation().getY());
+                ////("Found goal state");
+                ////("Box:" + leafNode.b.getId() + " " + leafNode.b.getLocation().getRow() + " " + leafNode.b.getLocation().getY());
                 //PlanType oneplan = new PlanType(leafNode.currentagent, leafNode.currentbox, leafNode.currentcell);
                 //plans.push(oneplan);
                 plan.getPath().pathbynode = leafNode.extractPlan();
@@ -788,7 +786,7 @@ public class SearchClient {
         int iterations = 0;
         while (true) {
             if (iterations == 1000) {
-                System.err.println(strategy.searchStatus());
+                //(strategy.searchStatus());
                 iterations = 0;
             }
             if (strategy.frontierIsEmpty()) {
@@ -802,10 +800,10 @@ public class SearchClient {
             //System.err.print("agentX : " + leafNode.a.getLocation().getRow() + " ");
             //System.err.print("agentY : " + leafNode.a.getLocation().getY() + " ");
             //System.err.print("HASH : " + leafNode.hashCode() + " ");
-            //System.err.println();
+            ////();
             if (leafNode.isGoalState(plan.withbox)) {
-                //System.err.println("Found goal state");
-                //System.err.println("Box:" + leafNode.b.getId() + " " + leafNode.b.getLocation().getRow() + " " + leafNode.b.getLocation().getY());
+                ////("Found goal state");
+                ////("Box:" + leafNode.b.getId() + " " + leafNode.b.getLocation().getRow() + " " + leafNode.b.getLocation().getY());
                 //PlanType oneplan = new PlanType(leafNode.currentagent, leafNode.currentbox, leafNode.currentcell);
                 //plans.push(oneplan);
                 plan.getPath().pathbynode = leafNode.extractPlan();
@@ -822,11 +820,11 @@ public class SearchClient {
     }
 
     public static void main(String[] args) throws Exception {
-        System.err.println("SearchClient initializing. I am sending this using the error output stream.");          
+        //("SearchClient initializing. I am sending this using the error output stream.");          
         try {
             SearchClient client = new SearchClient();
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            //(e.getMessage());
         }
     }
 }

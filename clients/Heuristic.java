@@ -13,7 +13,7 @@ public abstract class Heuristic implements Comparator<Node> {
 
     public int h(Node n) {
         if(SearchClient.agentGoback) {
-            //System.err.println("I am -----------------------------------------");
+            ////System.err.println("I am -----------------------------------------");
             return agentHeuristic(n);
         } else if(n.thisAgent.isClearMode()){
             return clearModeHeuristic(n);
@@ -36,8 +36,8 @@ public abstract class Heuristic implements Comparator<Node> {
             int boxToSubGoalDistance = Integer.MAX_VALUE;
             for(Box box : n.getBoxByLocation().values()){
                 if(!box.isBoxInFinalPosition() && box.getId() == Character.toUpperCase(currentSubGoal.getId())){
-                    //System.err.println("heuristic current subgoal : " + currentSubGoal.getId() + " ; Location is : " + currentSubGoal.getLocation());
-                    //System.err.println("heuristic current box : " + box.getId() + " ; Location is : " + box.getLocation());
+                    ////System.err.println("heuristic current subgoal : " + currentSubGoal.getId() + " ; Location is : " + currentSubGoal.getLocation());
+                    ////System.err.println("heuristic current box : " + box.getId() + " ; Location is : " + box.getLocation());
                     for(Goal goal : Node.goalDistance.keySet()){
                     	if(goal.getId() == currentSubGoal.getId() 
                     			&& goal.getLocation().getRow() == currentSubGoal.getLocation().getRow()
@@ -101,18 +101,18 @@ public abstract class Heuristic implements Comparator<Node> {
                 
             } else {
                 if(!n.isGoalState()) {
-                    System.err.println("Heuristics: No free box can be used to solve current sub goal.");
+                    //System.err.println("Heuristics: No free box can be used to solve current sub goal.");
                 }
             }
         } else {
-            System.err.println("Heuristics: No goal found.");
+            //System.err.println("Heuristics: No goal found.");
         }
-        //System.err.println("HeuristicDistance:  " + HeuristicDistance);
+        ////System.err.println("HeuristicDistance:  " + HeuristicDistance);
         return HeuristicDistance;
     }
     
     public int agentHeuristic(Node n){
-       // System.err.println("This is agent heuristic ??????");
+       // //System.err.println("This is agent heuristic ??????");
         int heuristicDistance = 0;
         Agent orginalAgent = null ;
         for(Agent agent : Node.orignalAgents){
@@ -120,15 +120,15 @@ public abstract class Heuristic implements Comparator<Node> {
                 orginalAgent = agent;
             }
         }
-       // System.err.println("This is thisAgent " + n.thisAgent.getLocation());
-       // System.err.println("This is orignalAgent " + orginalAgent.getLocation());
+       // //System.err.println("This is thisAgent " + n.thisAgent.getLocation());
+       // //System.err.println("This is orignalAgent " + orginalAgent.getLocation());
         heuristicDistance =Math.abs(n.thisAgent.getLocation().getRow() - orginalAgent.getLocation().getRow()) +
                             Math.abs(n.thisAgent.getLocation().getCol() - orginalAgent.getLocation().getCol());
         Command command = n.action;
         if(command != null && !(command.actionType == Command.Type.Move)){
             heuristicDistance += 10;
         }
-       // System.err.println("heuristicDistance = " + heuristicDistance);
+       // //System.err.println("heuristicDistance = " + heuristicDistance);
         return heuristicDistance;
     }
     

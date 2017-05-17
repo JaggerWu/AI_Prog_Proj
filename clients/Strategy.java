@@ -166,9 +166,9 @@ public abstract class Strategy {
             @Override
             public void addToFrontier(Node n) {
                     boolean added;
-                if(frontier.size() % 1000 == 0){
-                    System.err.println(this.searchStatus());
-                }
+                //if(frontier.size() % 1000 == 0){
+                    //System.err.println(this.searchStatus());
+                //}
                 n.setF(heuristic.f(n));
                 added = frontier.offer(n);
                 frontierSet.add(n);
