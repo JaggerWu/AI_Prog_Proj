@@ -9,13 +9,13 @@ It is required that the Java runtime environment binaries are available in your 
 
 You should not have the CLASSPATH environment variable set unless you know what you're doing.
 
-#### Compile the provided sample clients with:
+### Compile the provided sample clients with:
 * ```$ javac sampleclients/*.java```
 
-#### Get help about server options and arguments:
+### Get help about server options and arguments:
 * ```$ java -jar server.jar -?```
     
-#### The server takes the following arguments:
+### The server takes the following arguments:
 *  ```-c <command>```
 *  ```-l <level path>```
 *  ```-g [<milliseconds>]```
@@ -23,7 +23,7 @@ You should not have the CLASSPATH environment variable set unless you know what 
 *  ```-t <seconds>```
 *  ```-o <directory or file>```
 
-##### For this arguments
+#### For this arguments
 - The `-c` <command> argument specifies the command to run your client, as you would write it if you ran it from command line (including arguments to your client).
     
 - The `-l` <level path> argument specifies the level to run the client on.
@@ -40,11 +40,11 @@ You should not have the CLASSPATH environment variable set unless you know what 
 
 - The `-o` <directory> specifies a directory where to save a log of the current run with the `-c` and `-l` arguments.
     
-#### Basic usage for the server is either of:
+### Basic usage for the server is either of:
 * ```$ java -jar server.jar -c <command> -l <level path> <arguments>```
 * ```$ java -jar server.jar -o <file>```
 
-### Important for Unix systems 
+## Important for Unix systems 
 Some Unix systems have been known to have bad performance with the graphical interface because hardware acceleration is disabled by default.   
 
 The `-Dsun.java2d.opengl=true` option enables OpenGL hardware acceleration (see [link](http://docs.oracle.com/javase/8/docs/technotes/guides/2d/flags.html)).   
